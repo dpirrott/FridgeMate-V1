@@ -1,0 +1,8 @@
+Make sure to do pip freeze before pushing to github, then copy that output into requirements.txt
+- only needed if something new was installed on virtual server, or updated
+Also MAKE SURE to create a mysql dump file to be able to transfer database between computers.
+
+virtualenv testEnv
+testEnv/Scripts/activate
+pip install -r requirements.txt
+$env:FLASK_APP="hello.py";

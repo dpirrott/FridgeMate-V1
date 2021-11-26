@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/style.css">
+    <title>FridgeMate Confirmation Email</title>
+</head>
+<body>
+    <div class="container">
+        <div class="header-bar" style="background-color: rgb(43, 43, 43); display: flex; align-items: center;">
+            <img src="https://bl6pap003files.storage.live.com/y4m8u8vcX92zTinZizcU_FrkIboo0LyPJd2eJRCsduHZpzLQyRK7xzYOONbv9sSVKrJVJB7f8BwCASv2yWNS-Gz5A1AMRSSzsv9OLjTTqUUNPpa3DQuH3qTLSOXBxn4bg8D94Xa9ZakH13f-2j8mRU1E5fITu_5ILjQMaJzPhDzlOdYYQtwI8zK75gOjbKOhk84?width=303&height=70&cropmode=none" width="303" height="70" />
+        </div>
+        <div class="container">
+            <h3>Welcome {{ username }},</h3>
+            <p>You've successfully registered an account with FridgeMate.</p>
+            <p>Please click the following link to confirm your email <a href="{{ url_for('verify_email', token=token, _external=True) }}"><button>Confirm</button></a></p>
+        </div>
+    </div>
+</body>
+</html>

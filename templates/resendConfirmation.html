@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+<title>Email Verification</title>
+{% endblock %}
+
+{% block body %}
+<div id="loginTitle">
+    <h1 id="signin">Email Verification</h1>
+</div>
+
+<form action="/resendConfirmation" method="POST" id="loginForm">
+
+  <div class="form-group">
+    <input type="email" placeholder="Email" name="email" class="form-control username">
+  </div>
+  
+  <div class="form-group buttonsContainer">
+    <div class="formButtons">
+      <button type="submit" class="btn btn-primary login">Send email</button>
+    </div>
+  </div>
+
+</form>
+
+{% endblock %}

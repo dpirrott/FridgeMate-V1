@@ -1,0 +1,299 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+<title>{{ session.username }}'s Profile</title>
+
+<script type="text/javascript">
+    /* Two possible errors, username taken or email taken */
+    let emailError = 0;
+    let usernameError = 0;
+    $(function(){
+
+        /* Check if username is already in database */
+        $("#username").keyup(function(){
+            if ($(this).val().length >= 5) {
+                verifyUsername($(this).val());
+            }else{
+                console.log("Username must be 5 or more characters")
+                $("#usernameVerify").text("Username must be at least 5 characters.");
+                $("#usernameVerify").css("color", "red");
+                $("#submitBtn").prop('disabled', true)
+            }
+        });
+        function verifyUsername(input){
+            $.post(
+                "{{url_for('verify_username')}}",{
+                    input: input
+                },
+                function(data, status){
+                    if (data == 1){
+                        console.log("Username already exists.");
+                        usernameError = 1;
+                        $("#usernameVerify").text("Username already exists.");
+                        $("#usernameVerify").css("color", "red");
+                        $("#submitBtn").prop('disabled', true);
+                    }
+                    else{
+                        usernameError = 0;
+                        if (emailError == 0){
+                            $("#submitBtn").prop('disabled', false);
+                        }
+                        console.log("Username available.");
+                        $("#usernameVerify").text("Username available.");
+                        $("#usernameVerify").css("color", "green");
+                    }
+                }
+            );      
+        };
+
+        /* Check if email is already in database*/
+        $("#email").keyup(function(){
+            if ($(this).val().length >= 12) {
+                verifyEmail($(this).val());
+            }else{
+                $("#emailVerify").text("")
+                $("#submitBtn").prop('disabled', true)
+            }
+        });
+        function verifyEmail(input){
+            $.post(
+                "{{url_for('check_email')}}",{
+                    input: input
+                },
+                function(data, status){
+                    if (data == 1){
+                        emailError = 1;
+                        console.log("Email already exists.");
+                        $("#emailVerify").text("Email already exists.");
+                        $("#emailVerify").css("color", "red");
+                        $("#submitBtn").prop('disabled', true);
+                    }
+                    else{
+                        emailError = 0;
+                        console.log("Email available.");
+                        $("#emailVerify").text("Email available.");
+                        $("#emailVerify").css("color", "green");
+                        if(usernameError == 0){
+                            $("#submitBtn").prop('disabled', false);
+                        }
+                    }
+                }
+            );      
+        };
+
+        /* Required for bootstrap popover */
+        var popoverTriggerList = [].slice.call($('[data-bs-toggle="popover"]'))
+        var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+            return new bootstrap.Popover(popoverTriggerEl)
+        })
+
+        /* Required for boostrap popover */
+        var popover = new bootstrap.Popover($('.popover-dismiss'), {
+            trigger: 'focus'
+        })
+
+        
+
+
+    });
+
+    function updateInput(val, outputID){
+        if(outputID == 'alertTriggerOutput'){
+            if(val == 0){
+                $("#"+outputID).text("No notification trigger.");
+            }else{
+                $("#"+outputID).text(val + " days before expiry");
+            }
+        }else{
+            if(val == 1){
+                $("#"+outputID).text("Everyday");
+            }else{
+                $("#"+outputID).text("Once every " + val + " days");
+            }
+        }
+        
+    }
+</script>
+{% if modal == 1 %}
+    <script type="text/javascript"> 
+        $(window).on('load', function(){
+            $('#passwordModal').modal('show');
+        });
+    </script>
+{% endif %}
+{% if modal2 == 1 %}
+    <script type="text/javascript"> 
+        $(window).on('load', function(){
+            $('#editProfile').modal('show');
+        });
+        
+    </script>
+{% endif %}
+
+{% endblock %}
+
+{% block body %}
+
+
+
+<div class="formTitleContainer">
+    <h1 class="formTitle">{{ profile['username'].capitalize() }}'s Profile</h1>
+</div>
+<div class="profileContainer">
+    <div class="row justify-content-center">
+        <div id="profileData">
+            <table>
+                <tr>
+                    <th class="profileHeaders">Name:</th>
+                    <td>{{ profile['name'] }}</td>
+                </tr>
+                <tr>
+                    <th class="profileHeaders">Username:</th>
+                    <td>{{ profile['username'] }}</td>
+                </tr>
+                <tr>
+                    <th class="profileHeaders">Email:</th>
+                    <td>{{ profile['email'] }}</td>
+                </tr>
+            </table>
+            <h3>Notification Preferences</h3>
+            <p id="profileNotice">Alerts are only sent out if there's a product expiring within the specified notification period.</p>
+            <table>
+                <tr>
+                    <th class="profileHeaders">
+                        Notification:
+                    </th>
+                    <td>
+                        {{ profile['alert_threshold'] }} days before expiry <a tabindex="0" role="button" class="infoPopover" data-bs-toggle="popover" data-bs-trigger="focus" title="Expiry Notification" data-bs-content="The notification will be an email containing all items that are within the specified notification period."><img class="infoIcon" src="../static/images/info.png"/></a>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="profileHeaders">
+                        Frequency:
+                    </th>
+                    <td>
+                        Every {{ profile['min_days_between_alerts'] }} day(s) <a tabindex="0" role="button" class="infoPopover" data-bs-toggle="popover" data-bs-trigger="focus" title="Minimum Days Between Alerts" data-bs-content="Even if there are items expiring soon, the program will respect users choice for frequency."><img class="infoIcon" src="../static/images/info.png"/></a>
+                    </td>
+                </tr>
+            </table>
+            <h3>Miscellaneous Info</h3>    
+            <table>
+                <tr>
+                    <th class="profileHeaders">User ID:</th>
+                    <td>{{ profile['id'] }}</td>
+                </tr>
+                <tr>
+                    <th class="profileHeaders">Created:</th>
+                    <td>{{ profile['create_time'] }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="profileContainer" id="bottomProfile">
+    <div class="row justify-content-center">
+        <div class="buttons">
+            <button type="button" class="btn btn-dark add-item-btn" data-bs-toggle="modal" data-bs-target="#passwordModal" id="editL">Change Password</button>
+            <button class="btn btn-outline-danger add-item-btn" id="editR" data-bs-toggle="modal" data-bs-target="#editProfile"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+            </svg> Edit Profile</button>
+        </div>
+    </div>
+</div>    
+
+
+
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="passwordModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Change Password</h5>
+                <button type="button" id="changePasswordClose" class="btn-close" data-bs-dismiss="modal"  aria-label="Close"></button>
+            </div>
+            <form action="/changePassword" method='POST'>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="editProfileLabel">Old password</label>
+                        <input type="password" class="form-control inputFieldProfile" name="oldPass" value="{{ oldPassword }}">
+                    </div>
+                    <div class="form-group">
+                        <label class="editProfileLabel">New password</label>
+                        <input type="password" class="form-control inputFieldProfile" name="newPass" value="{{ newPassword }}">
+                    </div>
+                    <div class="form-group">
+                        <label class="editProfileLabel">Confirm new password</label>
+                        <input type="password" class="form-control inputFieldProfile" name="confirmNewPass" value="{{ confirmPassword }}">
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <div>
+                        {% if error %}
+                            <p class="text-danger">{{ error }}</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-secondary add-item-btn" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary add-item-btn">Update Password</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit profile button -->
+<div class="modal fade" id="editProfile" tabindex="-1" role="dialog" aria-labelledby="editProfileModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Edit Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/edit_profile" method='POST'>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="editProfileLabel">Name</label>
+                        <input type="text" class="form-control inputFieldProfile" name="name" value="{{ profile['name'] }}">
+                    </div>
+                    <div class="form-group">
+                        <label class="editProfileLabel">Username</label>
+                        <input type="text" class="form-control inputFieldProfile" id="username" name="username" value="{{ profile['username'] }}">
+                        <p id="usernameVerify"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="editProfileLabel">Email</label>
+                        <input type="email" class="form-control inputFieldProfile" id="email" name="email" value="{{ profile['email'] }}">
+                        <p id="emailVerify"></span>
+                    </div>
+                    <div class="form-group rangeSlider">
+                        <label class="editProfileLabel">Set Notification Trigger</label>
+                        <p class="rangeIndicator" id="alertTriggerOutput">{{ profile['alert_threshold'] }} days before expiry</p>
+                        <input type="range" class="form-range" min="0" max="7" step="1" oninput="updateInput(value, 'alertTriggerOutput')" name="notification"  id="notification" value="{{ profile['alert_threshold'] }}">
+                    </div>
+                    <div class="form-group rangeSlider">
+                        <label class="editProfileLabel">Set Notification Frequency</label>
+                        <p class="rangeIndicator" id="frequencyOutput">Once every {{ profile['min_days_between_alerts'] }} days</p>
+                        <input type="range" class="form-range" min="1" max="7" step="1" oninput="updateInput(value, 'frequencyOutput')" name="frequency"  id="frequency" value="{{ profile['min_days_between_alerts'] }}">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <div>
+                        {% if error %}
+                            <p class="text-danger">{{ error }}</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <a href="/profile"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></a>
+                        <button type="submit" id="submitBtn" class="btn btn-primary">Submit Changes</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,217 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+
+<title>Add Item(s) to Fridge</title>
+
+    <script type="text/javascript">
+        
+        $(function() {
+
+            setTimeout(function(){
+                $('.alert').fadeOut(400)
+            }, 5000);
+
+            previousItem = false
+            newItem = false
+            previousExpDate = false
+            newExpDate = false
+            $('#submitPrevious').prop('disabled', true)
+            $('#submitNew').prop('disabled', true)
+            $("#autocomplete").autocomplete({
+                source:function(request, response) {
+                    $.getJSON("{{url_for('autocomplete')}}",{
+                        input: request.term, // in flask, "input" will be the argument to look for using request.args
+                    }, 
+                    function(data) {
+                        response(data);
+                    });
+                },
+                minLength: 2,
+                delay: 200,
+                select: function(event, ui) {
+                    console.log(ui.item.value);
+                }
+            });
+
+            $('#previousEntries').change(function(){
+                previousItem = true
+                if(previousExpDate == true){
+                    $('#submitPrevious').prop('disabled', false)
+                } 
+            });
+
+            $('#dateInput2').change(function(){
+                if($(this).val() == ""){
+                    $('#submitPrevious').prop('disabled', true)
+                    previousExpDate = false
+                }else{
+                    previousExpDate = true
+                    if(previousItem == true){
+                        $('#submitPrevious').prop('disabled', false)
+                    } 
+                }
+            });
+
+            $('#autocomplete').keyup(function(){
+                if($(this).val() == ""){
+                    newItem = false
+                    $('#submitNew').prop('disabled', true)
+                }else{
+                    newItem = true
+                    if(newExpDate == true){
+                        $('#submitNew').prop('disabled', false)
+                    } 
+                }
+            });
+
+            $('#dateInput1').change(function(){
+                if($(this).val() == ""){
+                    $('#submitNew').prop('disabled', true)
+                    newExpDate = false
+                }else{
+                    newExpDate = true
+                    if(newItem == true){
+                        $('#submitNew').prop('disabled', false)
+                    } 
+                }
+            });
+
+            console.log("{{ tree }}");
+        })
+    </script>
+
+    {% if tree == 1 %}
+        <script type="text/javascript"> 
+                $(window).on('load', function(){
+                    $('#mymodal').modal('show');
+                });
+        </script>
+    {% endif %}
+
+{% endblock %}
+
+{% block body %}
+    <div class="formTitleContainer">
+        <h1 class="formTitle">Add Product</h1>
+    </div>
+    
+
+    <div id="addItemContainer">
+        <form action="{{ url_for('add_item', tree=0) }}" method="POST" id="addItemForm">
+
+            <div class="accordion" id="accordionExample">
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      <h2 class="addProductButtonText">Add new product</h2>
+                    </button>
+                  </h2>
+                  <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="centerForm">
+                            <div class="addItemBlocks">
+                                
+                                <input type="text" name="newItem" class="form-control" id="autocomplete" placeholder="Enter new item...">
+                            </div>
+                        </div>
+                        <div class="centerForm">
+                            <div class="addItemBlocks">
+                                <label for="newEntryDate" class="expiryLabel">Expiry date:</label>
+                                <input type="date" id="dateInput1" name="newEntryDate">
+                            </div>
+                        </div>
+                        <div class="addItemBlocks">
+                            <button type="submit" class="btn btn-dark" id="submitNew" name="entryButton" value="new">Submit</button>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="addItemBlocks">
+                    <h3 id="or"><strong>OR</strong></h3>
+                </div>
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        <h2 class="addProductButtonText">Add previous product</h2>
+                    </button>
+                  </h2>
+                  <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="addItemBlocks">
+                            <label>Previously Entered Items</label>
+                            <select class="form-select form-select-sm" id="previousEntries" name="previousEntry" aria-label=".form-select-sm example">
+                                
+                                {% if previousItems|length > 0 %}
+            
+                                    <option selected disabled="true" value="nothing">Select a previous item</option>
+            
+                                {% else %}
+            
+                                    <option selected disabled="true" value="nothing">You have no previous items</option>
+            
+                                {% endif %}
+            
+            
+                                {% for item in previousItems %}
+                                    <option class="select-items" value="{{ item['item'] }}">{{ item['item'] }}</option>
+                                {% endfor %}
+            
+                            </select>
+                        </div>
+                        <div class="addItemBlocks">
+                            <label for="previousEntryDate" class="expiryLabel">Expiry date:</label>
+                            {% if previousItems|length > 0 %}
+            
+                                <input type="date" id="dateInput2" name="previousEntryDate">
+            
+                            {% else %}
+            
+                                <input type="date" id="dateInput2" disabled="true" name="previousEntryDate">    
+            
+                            {% endif %}
+                            
+                        </div>
+                        <div class="addItemBlocks">
+                            <button type="submit" class="btn btn-dark" id="submitPrevious" name="entryButton" value="previous">Submit</button>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+
+
+            
+
+            
+
+            
+          </form>
+    </div>
+
+    
+    <!-- Modal -->
+
+
+        <div class="modal fade" id="mymodal" tabindex="-1" aria-labelledby="exampleModalLabel">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">What next?</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="lead">You can go back to your fridge or add another item.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="/fridge_view"><button type="button" class="btn btn-warning add-item-btn">Go to fridge</button></a>
+                        <button type="button" class="btn btn-primary add-item-btn" data-bs-dismiss="modal" aria-label="Close">Add another item</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{% endblock %}

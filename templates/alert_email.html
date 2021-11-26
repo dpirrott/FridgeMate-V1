@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FridgeMate Email Notification</title>
+</head>
+<body>
+    
+        <table cellspacing="0" cellpadding="0" width="100%" style="border:0;">
+            <tr style="background-color: rgb(43, 43, 43);">
+                <td style="width:10px;"></td>
+                <td style=" display: flex; align-items: center;">
+                    <img src="https://bl6pap003files.storage.live.com/y4m8u8vcX92zTinZizcU_FrkIboo0LyPJd2eJRCsduHZpzLQyRK7xzYOONbv9sSVKrJVJB7f8BwCASv2yWNS-Gz5A1AMRSSzsv9OLjTTqUUNPpa3DQuH3qTLSOXBxn4bg8D94Xa9ZakH13f-2j8mRU1E5fITu_5ILjQMaJzPhDzlOdYYQtwI8zK75gOjbKOhk84?width=303&height=70&cropmode=none" width="303" height="70" alt="FridgeMate" />
+                </td>
+                <td style="width:10px;"></td>
+            </tr>
+            <tr style="background-color: rgb(189, 189, 189);">
+                <td style="width:10px;"></td>
+                <td style="color:black;">
+                    <h3>Hello {{ username }},</h3>
+                    <p>The following items in your fridge are coming close to expiry: </p>
+                    <table style="text-align: center; border-collapse: collapse; background-color: white;" cellpadding="5">
+                        <thead>
+                            <tr style="border-bottom: 2px solid black;">
+                                <th style="border:2px solid black;">Product</th>
+                                <th style="border:2px solid black;">Expiry Date</th>
+                                <th style="border:2px solid black;">Days remaining</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in items %}
+                            <tr>
+                                <td style="border-bottom: 2px solid black;border-left: 2px solid black;border-right: 2px solid black;">{{ item['item'] }}</td>
+                                <td style="border-bottom: 2px solid black;border-left: 2px solid black;border-right: 2px solid black;">{{ item['expiry_date'] }}</td>
+                                {% if item['days_left'] < 0 %}
+                                <td style="border-bottom: 2px solid black;border-left: 2px solid black;border-right: 2px solid black; font-weight: 800;">Expired</td>
+                                {% else %}
+                                <td style="border-bottom: 2px solid black;border-left: 2px solid black;border-right: 2px solid black; font-weight: 800;">{{ item['days_left'] }}</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <p>You can visit FridgeMate via the following link: <a href="fridgemate-app.herokuapp.com"><button>FridgeMate</button></a></p>
+                </td>
+                <td style="width:10px;"></td>
+            </tr>
+            <tr style="background-color: rgb(43, 43, 43);">
+                <td style="width:10px;"></td>
+                <td style="color:white;">
+                    <footer>
+                        <p>If you wish to stop receiving these emails, click the following link to unsubscribe: <a href="%unsubscribe_url%">Unsubscribe</a></p>
+                    </footer>
+                </td>
+                <td style="width:10px;"></td>
+            </tr>
+        </table>
+            
+            
+</body>
+</html>
