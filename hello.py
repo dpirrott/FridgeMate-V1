@@ -19,7 +19,10 @@ app.config['MYSQL_USER'] = os.environ.get("MySQL_USER")
 app.config['MYSQL_PASSWORD'] = os.environ.get("MySQL_PASSWORD")
 app.config['MYSQL_DB'] = 'heroku_7e98696366a4e2e'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
-app.secret_key = os.environ.get('APP_SECRET_KEY')
+
+app.secret_key = 'super secret key'
+app.config['SESSION_TYPE'] = 'filesystem'
+
 
 mail = Mail(app)
 mysql = MySQL(app)
@@ -35,11 +38,11 @@ def welcome():
 def about():
     return render_template('about.html')
 
-def send_simple_message(subject, username, email, token, html):
+def send_simple_message(subject, username, email, token, html, url, api, address):
     return requests.post(
-        os.environ.get("API_BASE_URL"),
-        auth=("api", os.environ.get("MAIL_API_KEY")),
-        data={"from": "FridgeMate " + os.environ.get("MAIL_ADDRESS"),
+        url,
+        auth=("api", api),
+        data={"from": address,
               "to": [email],
               "subject": subject,
               "html": render_template(html, username=username.capitalize(), token=token)})
@@ -185,12 +188,12 @@ def login():
 
 # Generate reset token
 def get_reset_token(user, expires=500):
-    return jwt.encode({'reset_password': user, 'exp': time() + expires}, key=str(os.environ.get('SECRET_KEY_FLASK')), algorithm="HS256")
+    return jwt.encode({'reset_password': user, 'exp': time() + expires}, key=str(os.environ.get('SECRET_KEY')), algorithm="HS256")
 
 # Verify reset token
 def verify_reset_token(token):
     try:
-        username = jwt.decode(token, key=str(os.environ.get('SECRET_KEY_FLASK')), algorithms="HS256")['reset_password']
+        username = jwt.decode(token, key=str(os.environ.get('SECRET_KEY')), algorithms="HS256")['reset_password']
         print(username)
     except Exception as e:
         print(e)
@@ -223,12 +226,14 @@ def forgotPass():
 
             username = profile['username']
 
+            print("before token")
             # Generate unique token for user
             token = get_reset_token(username)
-
+            print("after token")
             # Generate forgot password email
-            send_simple_message("Password Reset Confirmation", username.capitalize(), str(email), token, "password_reset_email.html")
-
+            send_simple_message("Password Reset Confirmation", username.capitalize(), str(email), token, "password_reset_email.html", os.environ.get("API_BASE_URL"), os.environ.get("MAIL_API_KEY"),  os.environ.get("MAIL_ADDRESS"))
+            print("after email")
+            print(os.environ.get('MAIL_ADDRESS') + str(type(os.environ.get('MAIL_ADDRESS'))))
             return redirect(url_for('login'))
 
     else:

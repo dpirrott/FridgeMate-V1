@@ -50,11 +50,11 @@ def daysLeftAll():
     for user in users:
         days_left(user["id"])
 
-def send_simple_message(subject, username, email, items, html):
+def send_simple_message(subject, username, email, items, html, url, api, address):
     return requests.post(
-        os.environ.get("API_BASE_URL"),
-        auth=("api", os.environ.get("MAIL_API_KEY")),
-        data={"from": "FridgeMate " + os.environ.get("MAIL_ADDRESS"),
+        url,
+        auth=("api", api),
+        data={"from": address,
               "to": [email],
               "subject": subject,
               "html": render_template(html, username=username, items=items)})
@@ -99,7 +99,7 @@ def sendEmailAlerts():
             if len(alertItems) > 0:
                 alertItems.sort(key=lambda x: x['days_left'])
                 cur.execute("UPDATE users SET date_last_alert = %s where id = %s", [dToday.date(), user['id']])
-                send_simple_message("FridgeMate Expiry Notification", user['username'], user['email'], alertItems, "alert_email.html")
+                send_simple_message("FridgeMate Expiry Notification", user['username'], user['email'], alertItems, "alert_email.html", os.environ.get("API_BASE_URL"), os.environ.get("MAIL_API_KEY"),  os.environ.get("MAIL_ADDRESS"))
     conn.commit()
     cur.close()
     
