@@ -124,7 +124,7 @@ def resendConfirmation():
         token = get_reset_token(username)
 
         # Registration confirmation email
-        send_simple_message('FridgeMate Registration Confirmation', username, email, token, 'email.html')
+        send_simple_message('FridgeMate Registration Confirmation', username, email, token, 'email.html', os.environ.get("API_BASE_URL"), os.environ.get("MAIL_API_KEY"),  os.environ.get("MAIL_ADDRESS"))
 
         flash(f'A new confirmation email has been sent out to {email}', 'success')
         return redirect(url_for('login'))
