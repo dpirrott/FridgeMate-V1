@@ -8,6 +8,9 @@
     let emailError = 0;
     let usernameError = 0;
     $(function(){
+        setTimeout(function(){
+            $('.alert').fadeOut(400)
+        }, 5000);
 
         /* Check if username is already in database */
         $("#username").keyup(function(){
@@ -81,6 +84,46 @@
             );      
         };
 
+        /* Make sure passwords match */
+        $(function(){
+        $("#updatePassBtn").prop('disabled', true);
+        $("#confirmNewPass").keyup(function(){
+            if($(this).val().length >= 5){    
+                if($(this).val() == $("#newPass").val()){
+                    $("#changePassVerify").text("Passwords match.");
+                    $("#changePassVerify").css("color", "green");
+                    $("#updatePassBtn").prop('disabled', false);
+                }else{
+                    $("#changePassVerify").text("Passwords do not match.");
+                    $("#changePassVerify").css("color", "red");
+                    $("#updatePassBtn").prop('disabled', true);
+                }
+            }else{
+                $("#changePassVerify").text("Password must be 5 characters minimum");
+                $("#changePassVerify").css("color", "red");
+                $("#updatePassBtn").prop('disabled', true);
+            }
+        });
+        $("#newPass").keyup(function(){
+            if($(this).val().length >= 5){ 
+                if($(this).val() == $("#confirmNewPass").val()){
+                    $("#changePassVerify").text("Passwords match.");
+                    $("#changePassVerify").css("color", "green");
+                    $("#updatePassBtn").prop('disabled', false);
+                    
+                }else{
+                    $("#changePassVerify").text("Passwords do not match.");
+                    $("#changePassVerify").css("color", "red");
+                    $("#updatePassBtn").prop('disabled', true);
+                }
+            }else{
+                $("#changePassVerify").text("Password must be 5 characters minimum");
+                $("#changePassVerify").css("color", "red");
+                $("#updatePassBtn").prop('disabled', true);
+            }
+        });
+    });
+
         /* Required for bootstrap popover */
         var popoverTriggerList = [].slice.call($('[data-bs-toggle="popover"]'))
         var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
@@ -91,10 +134,6 @@
         var popover = new bootstrap.Popover($('.popover-dismiss'), {
             trigger: 'focus'
         })
-
-        
-
-
     });
 
     function updateInput(val, outputID){
@@ -221,12 +260,13 @@
                     </div>
                     <div class="form-group">
                         <label class="editProfileLabel">New password</label>
-                        <input type="password" class="form-control inputFieldProfile" name="newPass" value="{{ newPassword }}">
+                        <input type="password" class="form-control inputFieldProfile" id="newPass" name="newPass" value="{{ newPassword }}">
                     </div>
                     <div class="form-group">
                         <label class="editProfileLabel">Confirm new password</label>
-                        <input type="password" class="form-control inputFieldProfile" name="confirmNewPass" value="{{ confirmPassword }}">
+                        <input type="password" class="form-control inputFieldProfile" id="confirmNewPass" name="confirmNewPass" value="{{ confirmPassword }}">
                     </div>
+                    <p class="message" id="changePassVerify"></p>
                 </div>
                 
                 <div class="modal-footer">
@@ -234,10 +274,11 @@
                         {% if error %}
                             <p class="text-danger">{{ error }}</span>
                         {% endif %}
+                        
                     </div>
                     <div>
                         <button type="button" class="btn btn-secondary add-item-btn" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary add-item-btn">Update Password</button>
+                        <button type="submit" id="updatePassBtn" class="btn btn-primary add-item-btn">Update Password</button>
                     </div>
                 </div>
             </form>

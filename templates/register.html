@@ -10,6 +10,9 @@
     /* Start verifying username availability after 6 characters */
     $(document).ready(function() {
         $(":input").attr("autocomplete","off");
+        setTimeout(function(){
+            $('.alert').fadeOut(400)
+        }, 5000);
     });
     $(function(){
         
@@ -129,7 +132,8 @@
             }
         });
     });
-        
+    
+    
 
 </script>
 
@@ -160,7 +164,7 @@
             <input type="password" placeholder="Confirm Password" class="form-control inputField" id="confirm">
         </div>
         <p id="passwordVerify" class="message"></p>
-        <div class="form-group buttonsContainer">
+        <div class="form-group buttonsContainer" id="regBtn">
             <input type="submit" id="submitBtn" class="btn btn-primary login" value="Submit">
         </div>
     </form>

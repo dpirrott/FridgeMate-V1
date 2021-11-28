@@ -397,15 +397,21 @@ def changePassword():
     cur.execute('SELECT * FROM users WHERE username = %s', [username])
     user = cur.fetchone()
 
+    # Make sure old password field isn't blank
+    if not oldPasswordEntered:
+        modal = 1
+        error = "Old password cannot be blank"
+        cur.close()
+        return render_template('profile.html', error=error, profile=user, modal=modal, oldPassword=oldPasswordEntered, newPassword=newPassword, confirmPassword=confirmNewPassword)
+       
     # Make sure new password and conrimation match (this would happen if someone bypassed javascript controls)
     if newPassword != confirmNewPassword:
         modal=1
-        error = "Passwords dont match lol"
+        error = "Passwords dont match lol, you know you're web programming don't you"
         cur.close()
         return render_template('profile.html', error=error, profile=user, modal=modal, oldPassword=oldPasswordEntered, newPassword=newPassword, confirmPassword=confirmNewPassword)
 
-    # Need to confirm old password matches before this change can be applied
-    
+    # Need to confirm old password matches before this change can be applied  
     oldPassword = user['password']
     if sha256_crypt.verify(oldPasswordEntered, oldPassword):
         newPass = sha256_crypt.encrypt(str(newPassword))
