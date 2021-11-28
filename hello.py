@@ -115,7 +115,7 @@ def resendConfirmation():
         cur = mysql.connection.cursor()
         found = cur.execute('SELECT * FROM users WHERE email = %s', [email])
         if found == 0:
-            error='Email address has not been registered yet'
+            error='Email isn\t registered to an account (Go to \'Menu\'->\'Register\')'
             return render_template('resendConfirmation.html', error=error)
         
         user = cur.fetchone()
@@ -187,7 +187,7 @@ def login():
         return render_template('login.html')
 
 # Generate reset token
-def get_reset_token(user, expires=500):
+def get_reset_token(user, expires=5000):
     return jwt.encode({'reset_password': user, 'exp': time() + expires}, key=str(os.environ.get('SECRET_KEY')), algorithm="HS256")
 
 # Verify reset token
@@ -226,14 +226,12 @@ def forgotPass():
 
             username = profile['username']
 
-            print("before token")
             # Generate unique token for user
             token = get_reset_token(username)
-            print("after token")
+
             # Generate forgot password email
             send_simple_message("Password Reset Confirmation", username.capitalize(), str(email), token, "password_reset_email.html", os.environ.get("API_BASE_URL"), os.environ.get("MAIL_API_KEY"),  os.environ.get("MAIL_ADDRESS"))
-            print("after email")
-            print(os.environ.get('MAIL_ADDRESS') + str(type(os.environ.get('MAIL_ADDRESS'))))
+            flash(f"Password reset link has been sent to {str(email)}", "success")
             return redirect(url_for('login'))
 
     else:

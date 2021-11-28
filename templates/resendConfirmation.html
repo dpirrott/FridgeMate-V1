@@ -5,18 +5,19 @@
 {% endblock %}
 
 {% block body %}
-<div id="loginTitle">
-    <h1 id="signin">Email Verification</h1>
+
+<div class="formTitleContainer">
+  <h1 class="formTitle">Email Verification</h1>
 </div>
 
-<form action="/resendConfirmation" method="POST" id="loginForm">
+<form action="/resendConfirmation" method="POST" class="fridgeForm">
 
-  <div class="form-group">
-    <input type="email" placeholder="Email" name="email" class="form-control username">
+  <div class="form-group resetPass">
+    <input type="email" placeholder="Email" name="email" class="form-control inputFieldProfile">
   </div>
   
   <div class="form-group buttonsContainer">
-    <div class="formButtons">
+    <div class="formButtons passChangeBtn">
       <button type="submit" class="btn btn-primary login">Send email</button>
     </div>
   </div>

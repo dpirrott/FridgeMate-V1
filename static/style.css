@@ -12,8 +12,7 @@ h1{
     cursor: default;
 }
 
-.alert-success{
-    
+.alert{    
     padding-top: 5px;
     padding-bottom: 5px;
     margin-left: auto;
@@ -21,7 +20,33 @@ h1{
     margin-top: 0px;
     margin-bottom: 0;
     text-align: center;
-    width: 250px
+    width: 300px
+}
+
+.submitPassChange{
+    margin-top: 0;
+    justify-content: center;
+    display: flex;
+}
+
+.passChangeBtn{
+    justify-content: center !important;
+}
+
+#passResetDesc{
+    text-align: center;
+    background-color: rgb(199, 199, 199);
+    color: black;
+    border-top: 3px solid rgb(0, 0, 0);
+    border-bottom: 3px solid rgb(0, 0, 0);
+    font-style: italic;
+    margin-bottom: 0;
+}
+
+.bgColor{
+    width: 100%;
+    background-color: rgb(54, 54, 54);
+    border-radius: 0 0 20px 20px;
 }
 
 /****************
@@ -356,7 +381,19 @@ h1{
     margin-bottom: 0;
 }
 
-.rangeSlider
+.changePasswordLabel{
+    font-size: 20px;
+    font-weight: 800;
+    color: aliceblue;
+}
+
+.inputFieldPass{
+    margin-top: 0;
+}
+
+.resetPass{
+    text-align: center;
+}
 
 /****************
     Login CSS
@@ -365,7 +402,7 @@ h1{
 .buttonsContainer{
     justify-content: center;
     display: flex;
-    margin-top: 15px !important;
+    margin-top: 0;
 }
 
 .formButtons{
