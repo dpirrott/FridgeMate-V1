@@ -11,8 +11,8 @@
         <table cellspacing="0" cellpadding="0" width="100%" style="border:0;">
             <tr style="background-color: rgb(43, 43, 43);">
                 <td style="width:10px;"></td>
-                <td style=" display: flex; align-items: center;">
-                    <img src="https://bl6pap003files.storage.live.com/y4m8u8vcX92zTinZizcU_FrkIboo0LyPJd2eJRCsduHZpzLQyRK7xzYOONbv9sSVKrJVJB7f8BwCASv2yWNS-Gz5A1AMRSSzsv9OLjTTqUUNPpa3DQuH3qTLSOXBxn4bg8D94Xa9ZakH13f-2j8mRU1E5fITu_5ILjQMaJzPhDzlOdYYQtwI8zK75gOjbKOhk84?width=303&height=70&cropmode=none" width="303" height="70" alt="FridgeMate" />
+                <td style="display: flex; align-items: center;">
+                    <img src="https://bl6pap003files.storage.live.com/y4m8u8vcX92zTinZizcU_FrkIboo0LyPJd2eJRCsduHZpzLQyRK7xzYOONbv9sSVKrJVJB7f8BwCASv2yWNS-Gz5A1AMRSSzsv9OLjTTqUUNPpa3DQuH3qTLSOXBxn4bg8D94Xa9ZakH13f-2j8mRU1E5fITu_5ILjQMaJzPhDzlOdYYQtwI8zK75gOjbKOhk84?width=303&height=70&cropmode=none" width="250" height="60" alt="FridgeMate" />
                 </td>
                 <td style="width:10px;"></td>
             </tr>
@@ -20,7 +20,7 @@
                 <td style="width:10px;"></td>
                 <td style="color:black;">
                     <h3>Hello {{ username }},</h3>
-                    <p>The following items in your fridge are coming close to expiry: </p>
+                    <p>The following items in your fridge are coming close to or have already expired: </p>
                     <table style="text-align: center; border-collapse: collapse; background-color: white;" cellpadding="5">
                         <thead>
                             <tr style="border-bottom: 2px solid black;">
@@ -43,7 +43,10 @@
                         {% endfor %}
                         </tbody>
                     </table>
-                    <p>You can visit FridgeMate via the following link: <a href="fridgemate-app.herokuapp.com"><button>FridgeMate</button></a></p>
+                    <p>You can visit FridgeMate via the link below,</p> 
+                    <form action="https://fridgemate-app.herokuapp.com/">
+                        <button type="submit" style="background-color: black; color: white; padding: 5px; font-weight: 700; border-radius: 10px; margin-bottom: 10px;">FridgeMate</button>
+                    </form>
                 </td>
                 <td style="width:10px;"></td>
             </tr>
@@ -51,7 +54,7 @@
                 <td style="width:10px;"></td>
                 <td style="color:white;">
                     <footer>
-                        <p>If you wish to stop receiving these emails, click the following link to unsubscribe: <a href="%unsubscribe_url%">Unsubscribe</a></p>
+                        <p style="font-size:smaller;">If you wish to stop receiving these emails, click the following link to unsubscribe: <a href="%unsubscribe_url%">Unsubscribe</a></p>
                     </footer>
                 </td>
                 <td style="width:10px;"></td>
