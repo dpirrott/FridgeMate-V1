@@ -181,7 +181,7 @@
 <div class="profileContainer">
     <div class="row justify-content-center">
         <div id="profileData">
-            <table>
+            <table class="profileTable">
                 <tr>
                     <th class="profileHeaders">Name:</th>
                     <td>{{ profile['name'] }}</td>
@@ -197,13 +197,13 @@
             </table>
             <h3>Notification Preferences</h3>
             <p id="profileNotice">Alerts are only sent out if there's a product expiring within the specified notification period.</p>
-            <table>
+            <table class="profileTable">
                 <tr>
                     <th class="profileHeaders">
                         Notification:
                     </th>
                     <td>
-                        {{ profile['alert_threshold'] }} days before expiry <a tabindex="0" role="button" class="infoPopover" data-bs-toggle="popover" data-bs-trigger="focus" title="Expiry Notification" data-bs-content="The notification will be an email containing all items that are within the specified notification period."><img class="infoIcon" src="../static/images/info.png"/></a>
+                        {{ profile['alert_threshold'] }} days before expiry <a tabindex="0" role="button" class="infoPopover" data-bs-toggle="popover" data-bs-trigger="focus" title="Expiry Notification" data-bs-content="The notification will be an email sent out when an item falls within this period"><img class="infoIcon" src="../static/images/info.png"/></a>
                     </td>
                 </tr>
                 <tr>
@@ -211,12 +211,12 @@
                         Frequency:
                     </th>
                     <td>
-                        Every {{ profile['min_days_between_alerts'] }} day(s) <a tabindex="0" role="button" class="infoPopover" data-bs-toggle="popover" data-bs-trigger="focus" title="Minimum Days Between Alerts" data-bs-content="Even if there are items expiring soon, the program will respect users choice for frequency."><img class="infoIcon" src="../static/images/info.png"/></a>
+                        Every {{ profile['min_days_between_alerts'] }} day(s) <a tabindex="0" role="button" class="infoPopover" data-bs-toggle="popover" data-bs-trigger="focus" title="Minimum Days Between Alerts" data-bs-content="How often your fridge is checked and alerts are sent"><img class="infoIcon" src="../static/images/info.png"/></a>
                     </td>
                 </tr>
             </table>
             <h3>Miscellaneous Info</h3>    
-            <table>
+            <table class="profileTable">
                 <tr>
                     <th class="profileHeaders">User ID:</th>
                     <td>{{ profile['id'] }}</td>

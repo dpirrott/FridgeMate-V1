@@ -55,6 +55,9 @@ h1{
 /****************
     NAVBAR CSS
 *****************/
+.container-lg{
+    max-width: 900px;
+}
 
 .navbar-brand img{
     max-height: 60px;
@@ -236,6 +239,9 @@ h1{
 
 .profileContainer{
     background-color: rgb(54, 54, 54);
+    max-width: 500px;
+    min-width: 326px;
+    margin: 0 auto;
 }
 
 #outerProfile{
@@ -319,7 +325,7 @@ h1{
     padding-top: 10px;
     padding-bottom: none;
     font-weight: 700;
-    width: 100px;
+
 }
 
 #profileNotice{
@@ -346,6 +352,10 @@ h1{
 .infoIcon{
     border-radius: 50%;
     width:20px;
+}
+
+.profileTable{
+    margin:0 auto;
 }
 
 .infoPopover{
@@ -416,6 +426,7 @@ h1{
       justify-content: space-between;
       display: flex;
       width: 50%;
+      max-width: 200px;
       margin-top: 15px;
       margin-bottom: 0px;
       margin-right: auto;
@@ -451,7 +462,7 @@ h1{
     border-color: black;
     border-width: 3px;
     width: 80%;
-    max-width: 400px;
+    max-width: 350px;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 0px;
@@ -474,6 +485,10 @@ h1{
     align-items: center;
     border-radius: 90% 90% 0 0;
     margin-top: 5px;
+    max-width: 500px;
+    min-width: 326px;
+    margin-right: auto;
+    margin-left: auto;
 }
 
 /* Actual sign-in header h1*/
@@ -491,6 +506,10 @@ h1{
     padding-bottom: 20px;
     padding-top: 10px;
     border-radius: 0 0 20px 20px;
+    max-width: 500px;
+    min-width: 326px;
+    margin-right: auto;
+    margin-left: auto;
 }
 
 #forgot{
@@ -536,10 +555,14 @@ table.dataTable.no-footer {
     background-color: rgb(54, 54, 54);
     justify-content: center;
     align-items: center;
+    float: none !important;
 }
 
 .dataTables_paginate{
     padding: 0 !important;
+    float: none !important;
+    text-align: center !important;
+    justify-content: center !important;
 }
 
 .paginate_button{
@@ -575,11 +598,18 @@ a.paginate_button{
     border-radius: 10px 0 0 10px !important;
 }
 
+#fridgeContents_filter label{
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .dataTables_filter{
     background-color: rgb(54, 54, 54);
-    justify-content: center;
+    justify-content: center !important;
     align-items: center;
     margin-top: 0 !important;
+    float: none !important;
+    text-align: center !important;
 }
 
 .dataTables_wrapper .dataTables_filter input{
@@ -594,11 +624,12 @@ a.paginate_button{
     max-width: 400px;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 15px;
-    margin-top: 15px;
+    margin-bottom: 10px;
+    margin-top: 10px;
     transition: 0.3s;
     font-family: Helvetica; 
     font-weight: 800;
+    float: none !important;
 }
 
 .firstCol{
@@ -609,6 +640,7 @@ a.paginate_button{
 .daysLeft{
     font-weight: 900;
     font-size: 20px;
+    border-right: 0 !important;
 }
 
 .dataTables_wrapper .dataTables_filter input:focus{
@@ -618,6 +650,8 @@ a.paginate_button{
 #fridgeContents{
     box-shadow: 0px 3px 8px 2px rgb(105, 105, 105);
     border-collapse: collapse;
+    width: 100% !important;
+    max-width: 400px !important;
 }
 
 
@@ -625,11 +659,17 @@ a.paginate_button{
     background-color: rgb(54, 54, 54);
     border-radius: 0 0 20px 20px;
     padding-bottom: 10px;
+    max-width: 500px;
+    margin: 0 auto;
 }
 
 #fridgeContents thead tr{
     opacity: 100%;
     color: white;
+}
+
+#addBtn{
+    margin-left: 36.26px;
 }
 
 .dataTables_wrapper .dataTables_info{
@@ -638,6 +678,8 @@ a.paginate_button{
     margin-left: auto;
     margin-right: auto;
     padding-top: 5px;
+    float: none !important;
+    text-align: center;
 }
 
 .dataTables_empty{
@@ -661,6 +703,10 @@ table.dataTable thead th{
     margin-top: 5px;
 }
 
+.firstCol{
+    border-left: 0 !important;
+}
+
 .firstCol, .expDateCol, .checkboxCol{
     background-color: rgb(243, 221, 180);
 }
@@ -680,6 +726,9 @@ table.dataTable thead th{
     transition: 0.25s;
     font-weight: 900;
     color: black !important;
+    width: 80%;
+    margin-right: auto; 
+    margin-left: auto;
 }
 
 #autocomplete:focus{
@@ -779,6 +828,9 @@ table.dataTable thead th{
     padding-bottom: 10px;
     border-radius: 0 0 10px 10px;
     justify-content: center;
+    max-width: 500px;
+    min-width: 326px;
+    margin: 0 auto;
 }
 
 input[type="date"]{
