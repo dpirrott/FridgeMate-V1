@@ -31,7 +31,7 @@ mysql = MySQL(app)
 # Welcome page
 @app.route('/')
 def welcome():
-    return render_template('login.html')
+    return render_template('welcome.html')
 
 # About
 @app.route('/about')

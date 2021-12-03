@@ -19,7 +19,7 @@
             dom: 'Bfrtip',
             "order": [[ 3, "asc" ]],
             lengthMenu: [
-                [ 7, 16, 24, -1 ],
+                [ 6, 16, 24, -1 ],
                 [ '10 rows', '25 rows', '50 rows', 'Show all' ]
             ],
             language: {
@@ -29,7 +29,7 @@
                 infoEmpty: "Click <p style=\"display:inline; color:#198754;\">\"Add product\"</p> to add an item to your fridge"
             },
             buttons: [{
-                text:'Add product',
+                text:'Insert product(s)',
                 action: function ( e, dt, node, config ) {
                     window.location.href = "{{ url_for('add_item', tree=0) }}"
                 },
@@ -43,7 +43,7 @@
                 }
 
             }, {
-                text:'Delete product[s]',
+                text:'Delete product(s)',
                 className: "btn btn-danger add-item-btn",
                 init: function(api, node, config) {
                     $(node).removeClass('dt-button');
@@ -228,7 +228,7 @@
 
 {% block body %}
 
-    <div class="formTitleContainer">
+    <div class="formTitleContainer borderTopLeftRight">
         <h1 class="formTitle">{{ session.username.capitalize() }}'s Fridge</h1>
     </div>
 
