@@ -137,8 +137,23 @@ h1{
 .infoCell{
     background-color: rgba(54, 54, 54,0.9);
     padding:10px;
-    border: 2px solid white;
     color: white;
+}
+
+.infoCell p{
+    margin-bottom: 0;
+    margin-top: 10px;
+
+}
+
+.infoCell ul{
+    list-style-position: inside;
+}
+
+
+
+.infoCell div{
+
 }
 
 #flexFridgeView{
@@ -161,6 +176,7 @@ h1{
     align-items: flex-end;
     margin-bottom: -40px;
     width: 120px;
+    vertical-align: middle;
 }
 
 #next div, #previous div{
@@ -169,6 +185,19 @@ h1{
     height: 40px;
     width: 120px;
     opacity: 100% !important;
+    vertical-align: middle;
+    margin-bottom: -5px;
+    align-items: center;
+    display: flex;
+}
+
+#next div{
+    border-radius: 0 40% 40% 0;
+    border: 2px solid white;
+}
+#previous div{
+    border-radius: 40% 0 0 40%;
+    border: 2px solid white;
 }
 
 .margAuto{
@@ -180,20 +209,15 @@ h1{
 
     #flex{
         display: grid;
-        grid-gap:10px;
         grid-template-columns: 1fr 1fr;
+        border: 2px solid white;
     }
 
     #flexFridgeView{
         display: grid;
-        grid-gap:10px;
-        grid-template-columns: 2fr 3fr 2fr;
-    }
-
-    .flexRows{
-        height: 100%;
-        display: grid;
-        grid-template-rows: 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
+        grid-gap:0;
+        border: 2px solid white;
     }
 
     .hide-on-small-screen{
@@ -204,6 +228,7 @@ h1{
         align-items: flex-end;
         margin-bottom: -40px;
         width: 120px;
+        vertical-align: middle;
     }
 
     #next div, #previous div{
@@ -212,14 +237,27 @@ h1{
         height: 40px;
         width: 120px;
         opacity: 100% !important;
+        
+    }
+
+    #next div span, #previous div span{
+        display: inline-block;
+        vertical-align: middle;
+        line-height: normal;
     }
 
     .margAuto{
-        vertical-align: middle;
+        margin:auto;
     }
 
     .carousel-control-next, .carousel-control-prev{
         opacity:1;
+    }
+
+    #sampleFrigeInfo{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
     }
 
   }
@@ -256,6 +294,7 @@ h1{
 }
 
 #learnMoreContainer{
+    margin-top: 10px;
     text-align: center;
 }
 
