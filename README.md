@@ -1,9 +1,9 @@
 # FridgeMate Expiry Tracker
-#### Video demo: <URL HERE>
-#### Description:
+### Video demo: <URL HERE>
+### Description:
 The motivation for this project came from a realization that I personally find it difficult to keep track of all the expiry dates for products in my fridge. FridgeMate is a solution to keeping track of any number of expriy dates for products in your fridge. Originally FridgeMate was going to be an iOS app, but upon realizing that swift was restricted to Mac OS, I decided to go with a web application with mobile responsiveness in mind. Originally the notification system was going to be through push notifications on iOS, but after switching to a web application, emails alerts seemed like the best option. 
 
-##### User registration and login:
+#### User registration and login:
 
 
 
