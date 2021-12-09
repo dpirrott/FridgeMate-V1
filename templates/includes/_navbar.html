@@ -13,10 +13,10 @@
         <ul class="navbar-nav text-center">
           {% if session.logged_in %}
             {% if request.endpoint == "fridge_view" %}
-                <li class="nav-item"><a class="nav-link disabled" id="fridge_view" aria-current="page" href="/fridge_view">View Fridge</a></li>          
-              {% else %}
-                <li class="nav-item"><a class="nav-link" id="fridge_view" aria-current="page" href="/fridge_view">View Fridge</a></li>          
-              {% endif %}
+              <li class="nav-item"><a class="nav-link disabled" id="fridge_view" aria-current="page" href="/fridge_view">View Fridge</a></li>          
+            {% else %}
+              <li class="nav-item"><a class="nav-link" id="fridge_view" aria-current="page" href="/fridge_view">View Fridge</a></li>          
+            {% endif %}
           {% else %}
             <li class="nav-item"><a class="nav-link" aria-current="page" href="/">Home</a></li>
 
