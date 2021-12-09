@@ -713,6 +713,12 @@ h1{
     text-align: center;
 }
 
+#backEndMessage{
+    background-color: rgb(207, 207, 207);
+    display: inline-block;
+    margin:0 auto;
+}
+
 /****************
     Login CSS
 *****************/

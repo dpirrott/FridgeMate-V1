@@ -5,8 +5,6 @@
 
 <script type="text/javascript">
     
-    
-
     /* Start verifying username availability after 6 characters */
     $(document).ready(function() {
         $(":input").attr("autocomplete","off");
@@ -18,7 +16,10 @@
         
         /* Error flag array will be used to keep submit button disabled when form errors are present*/
         let errorFlag = [1,1,1];
-        $("#submitBtn").prop('disabled', true)
+        
+        $("#submitBtn").prop('disabled', true)        
+        
+        /* Check if username is already in database*/
         $("#username").keyup(function(){
             if ($(this).val().length >= 5) {
                 verifyUsername($(this).val());
@@ -30,7 +31,7 @@
         });
         function verifyUsername(input){
             $.post(
-                "{{url_for('verify_username')}}",{
+                "{{url_for('verify_username', username=False)}}",{
                     input: input
                 },
                 function(data, status){
@@ -45,6 +46,7 @@
                         $("#usernameVerify").css("color", "green")
                         errorFlag[0] = 0;
                         if (errorFlag[1] == 0 && errorFlag[2] == 0){
+                            $("#backEndMessage").text("")
                             $("#submitBtn").prop('disabled', false)
                         }
                     }
@@ -63,7 +65,7 @@
         });
         function verifyEmail(input){
             $.post(
-                "{{url_for('check_email')}}",{
+                "{{ url_for('check_email', email=False) }}",{
                     input: input
                 },
                 function(data, status){
@@ -74,10 +76,12 @@
                         $("#submitBtn").prop('disabled', true);
                     }
                     else{
+                        console.log(data)
                         errorFlag[1] = 0;
                         $("#emailVerify").text("Email available.");
                         $("#emailVerify").css("color", "green");
                         if(errorFlag[0] == 0 && errorFlag[2] == 0){
+                            $("#backEndMessage").text("")
                             $("#submitBtn").prop('disabled', false);
                         }
                     }
@@ -85,6 +89,7 @@
             );      
         };
 
+        /* Verify passwords match and are at least 5 characters long*/
         $("#confirm").keyup(function(){
             if($(this).val().length >= 5){    
                 if($(this).val() == $("#password").val()){
@@ -92,6 +97,7 @@
                     $("#passwordVerify").css("color", "green");
                     errorFlag[2] = 0;
                     if (errorFlag[0] == 0 && errorFlag[1] == 0){
+                        $("#backEndMessage").text("")
                         $("#submitBtn").prop('disabled', false);
                     }
                 }else{
@@ -112,17 +118,16 @@
                 if($(this).val() == $("#confirm").val()){
                     $("#passwordVerify").text("Passwords match.")
                     $("#passwordVerify").css("color", "green")
-                    if (errorFlag[1] > 0){
-                        errorFlag[1]--;
-                    }
+                    errorFlag[2] = 0
                     if (errorFlag[0] == 0 && errorFlag[1] == 0){
+                        $("#backEndMessage").text("")
                         $("#submitBtn").prop('disabled', false);
                     }
                 }else{
                     $("#passwordVerify").text("Passwords do not match.")
                     $("#passwordVerify").css("color", "red")
                     $("#submitBtn").prop('disabled', true)
-                    errorFlag[1] == 1;
+                    errorFlag[2] == 1;
                 }
             }else{
                 $("#passwordVerify").text("Password must be 5 characters minimum");
@@ -131,10 +136,49 @@
                 errorFlag[2] = 1;
             }
         });
+    
+        /* If page was reloaded due to error, re-check prefilled fields email, username, passwords */
+        /* Start with username */
+        if ($("#username").val().length >= 5) {
+                verifyUsername($("#username").val());
+            }else{
+                $("#usernameVerify").text("Username must be 5 characters minimum")
+                $("#usernameVerify").css("color", "red")
+                $("#submitBtn").prop('disabled', true)
+            }
+        
+        /* Email */
+        if ($("#email").val().length >= 12) {
+                verifyEmail($("#email").val());
+            }else{
+                $("#emailVerify").text("")
+                $("#submitBtn").prop('disabled', true)
+            }
+
+        /* Password & Confirmation */
+        if($("#password").val().length >= 5){ 
+            if($("#password").val() == $("#confirm").val()){
+                $("#passwordVerify").text("Passwords match.")
+                $("#passwordVerify").css("color", "green")
+                errorFlag[2] = 0
+                if (errorFlag[0] == 0 && errorFlag[1] == 0){
+                    $("#backEndMessage").text("")
+                    $("#submitBtn").prop('disabled', false);
+                }
+            }else{
+                $("#passwordVerify").text("Passwords do not match.")
+                $("#passwordVerify").css("color", "red")
+                $("#submitBtn").prop('disabled', true)
+                errorFlag[2] == 1;
+            }
+        }else{
+            $("#passwordVerify").text("Password must be 5 characters minimum");
+            $("#passwordVerify").css("color", "red");
+            $("#submitBtn").prop('disabled', true);
+            errorFlag[2] = 1;
+        }
     });
     
-    
-
 </script>
 
 {% endblock %}
@@ -146,22 +190,25 @@
     
     {% from "includes/_formhelpers.html" import render_field %}
     <form method="POST" action="/register" class="fridgeForm">
+        {% if message %}
+            <p id="backEndMessage" class="text-danger text-center">{{ message }}</p>
+        {% endif %}
         <div class="form-group">
-            <input type="text" placeholder="Name" class="form-control inputField" name="name">
+            <input type="text" placeholder="Name" class="form-control inputField" name="name" value="{{ request.form['name'] }}">
         </div>
         <div class="form-group">
-            <input type="email" placeholder="Email" class="form-control inputField" name="email" id="email">
+            <input type="email" placeholder="Email" class="form-control inputField" name="email" id="email" value="{{ request.form['email'] }}">
         </div>
         <p id="emailVerify" class="message"></p>
         <div class="form-group">
-            <input type="text" placeholder="Username" class="form-control inputField" name="username" id="username">
+            <input type="text" placeholder="Username" class="form-control inputField" name="username" id="username" value="{{ request.form['username'] }}">
         </div>
         <p id="usernameVerify" class="message"></p>
         <div class="form-group">
-            <input type="password" placeholder="Password" class="form-control inputField" name="password" id="password">
+            <input type="password" placeholder="Password" class="form-control inputField" name="password" id="password" value="{{ request.form['password'] }}">
         </div>
         <div class="form-group">
-            <input type="password" placeholder="Confirm Password" class="form-control inputField" id="confirm">
+            <input type="password" placeholder="Confirm Password" class="form-control inputField" name="confirm" id="confirm" value="{{ request.form['confirm'] }}">
         </div>
         <p id="passwordVerify" class="message"></p>
         <div class="form-group buttonsContainer" id="regBtn">

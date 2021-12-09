@@ -47,6 +47,80 @@ def send_simple_message(subject, username, email, token, html, url, api, address
               "subject": subject,
               "html": render_template(html, username=username.capitalize(), token=token)})
 
+# Check email availability
+@app.route('/check_email/<email>', methods=['POST'])
+def check_email(email):
+    if email != "False":
+        input = str(email)
+    else:
+        input = str(request.form['input'])
+    
+    # Create cursor for database
+    cur = mysql.connection.cursor()
+
+    # Check if username entered in form matches anything in database
+    user_found = cur.execute('SELECT * FROM users WHERE email = %s', [input])
+    
+    # To differentiate between a user editing his profile and someone registering a new profile
+    if "logged_in" not in session:
+        # Close the connection
+        cur.close()
+
+        if user_found != 0:
+            result = 1
+        else:
+            result = 0
+    
+        return str(result)
+    else:
+        profile = cur.fetchone()
+        if user_found != 0  and profile['username'] == session['username']:
+            result = 0
+        elif user_found != 0  and profile['username'] != session['username']:
+            result = 1
+        else:
+            result=0
+        cur.close()
+        return str(result)
+
+# Check username availability
+@app.route('/verify_username/<username>', methods=['POST'])
+def verify_username(username):
+    if username != "False":
+        input = str(username)
+    else:
+        input = str(request.form['input'])
+
+    # Create cursor for database
+    cur = mysql.connection.cursor()
+    input_un_capitalize = input[0].lower() + input[1:]
+    input_capitalize = input.capitalize()
+
+    # Check if username entered in form matches anything in database
+    user_found = cur.execute('SELECT * FROM users WHERE username = %s or username = %s or username = %s', [input, input_capitalize, input_un_capitalize])
+
+    # To differentiate between a user editing his profile and someone registering a new profile
+    if "logged_in" not in session:
+        # Close the connection
+        cur.close()
+
+        if user_found != 0:
+            result = 1
+        else:
+            result = 0
+    
+        return str(result)
+    else:
+        profile = cur.fetchone()
+        if user_found != 0  and profile['username'] == session['username']:
+            result = 0
+        elif user_found != 0  and profile['username'] != session['username']:
+            result = 1
+        else:
+            result=0
+        cur.close()
+        return str(result)
+
 # Register user
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -56,14 +130,49 @@ def register():
         name = request.form['name']
         email = request.form['email']
         username = request.form['username']
-        password = sha256_crypt.encrypt(str(request.form['password']))
+        password = request.form['password']
+        confirm_password = request.form['confirm']
+        encrypt_password = sha256_crypt.encrypt(str(password))
         dToday = datetime.now(tz=None).date()
         
+        # Make sure form data is acceptable
+
+        # Make sure no blank fields
+        if not name or not email or not username or not password:
+            message = "Registration fields cannot be blank"
+            return render_template('register.html', message=message)
+        
+        # Make sure email is unique
+        if check_email(email) != "0":
+            message = f"Email \"{str(email)}\" is already being used."
+            return render_template('register.html', message=message)
+
+        # Make sure username is > 5
+        if len(username) < 5:
+            message = "Username must be 5 characters minimum."
+            return render_template('register.html', message=message)
+        
+        # Make sure username is unique
+        if verify_username(username) == "1":
+            message = f"Username \"{str(username)}\" already taken"
+            return render_template('register.html', message=message)
+
+        # Make sure password > 5 characters
+        if len(password) < 5:
+            message = "Password must be 5 characters minimum"
+            return render_template('register.html', message=message)
+
+        if password != confirm_password:
+            message = "The two password fields must be identical"
+            return render_template('register.html', message=message)
+        
+
+
         # Create cursor for database
         curr = mysql.connection.cursor()
 
         # Execute the insertion of the new user data
-        curr.execute("INSERT INTO users (username, name, email, password, create_time) VALUES (%s, %s, %s, %s, %s)", (username, name, email, password, dToday))
+        curr.execute("INSERT INTO users (username, name, email, password, create_time) VALUES (%s, %s, %s, %s, %s)", (username, name, email, encrypt_password, dToday))
 
         # Commit data to db
         mysql.connection.commit()
@@ -365,8 +474,11 @@ def edit_profile():
         modal = 1
         return render_template('profile.html', profile=profile, modal2=modal, error=error)
 
+    # Check lower case first letter just in case the username is capitalized in the input
+    lower = username[0].lower() + username[1:]
+
     # Verify new username is actually available (if someone bypasses JS safeguard)
-    taken = cur.execute('SELECT * FROM users WHERE username = %s', [username])
+    taken = cur.execute('SELECT * FROM users WHERE username = %s or username = %s or username = %s', [username, username.capitalize(), lower])
     if taken > 0 and username != oldUsername:
         cur.execute('SELECT * FROM users WHERE username = %s', [oldUsername])
         profile = cur.fetchone()
@@ -485,8 +597,6 @@ def add_item(tree):
         # If previous entry submitted
         if request.form['entryButton'] == 'previous':
 
-            
-            print(request.form['previousEntry'])
             # Copy users ID selection into entry variable
             entry = request.form['previousEntry']
             user_id = session['id']
@@ -654,71 +764,6 @@ def autocomplete():
         # Close connection
         curr.close()
         return jsonify(results)
-
-@app.route('/verify_username', methods=['POST'])
-def verify_username():
-    input = str(request.form['input'])
-    
-    # Create cursor for database
-    cur = mysql.connection.cursor()
-    input_un_capitalize = input[0].lower() + input[1:]
-    input_capitalize = input.capitalize()
-    # Check if username entered in form matches anything in database
-    user_found = cur.execute('SELECT * FROM users WHERE username = %s or username = %s or username = %s', [input, input_capitalize, input_un_capitalize])
-
-    # To differentiate between a user editing his profile and someone registering a new profile
-    if "logged_in" not in session:
-        # Close the connection
-        cur.close()
-
-        if user_found != 0:
-            result = 1
-        else:
-            result = 0
-    
-        return str(result)
-    else:
-        profile = cur.fetchone()
-        if user_found != 0  and profile['username'] == session['username']:
-            result = 0
-        elif user_found != 0  and profile['username'] != session['username']:
-            result = 1
-        else:
-            result=0
-        cur.close()
-        return str(result)
-
-@app.route('/check_email', methods=['POST'])
-def check_email():
-    input = str(request.form['input'])
-    
-    # Create cursor for database
-    cur = mysql.connection.cursor()
-
-    # Check if username entered in form matches anything in database
-    user_found = cur.execute('SELECT * FROM users WHERE email = %s', [input])
-
-    # To differentiate between a user editing his profile and someone registering a new profile
-    if "logged_in" not in session:
-        # Close the connection
-        cur.close()
-
-        if user_found != 0:
-            result = 1
-        else:
-            result = 0
-    
-        return str(result)
-    else:
-        profile = cur.fetchone()
-        if user_found != 0  and profile['username'] == session['username']:
-            result = 0
-        elif user_found != 0  and profile['username'] != session['username']:
-            result = 1
-        else:
-            result=0
-        cur.close()
-        return str(result)
 
 @app.route('/deleteEntries', methods=['POST'])
 def deleteEntries():

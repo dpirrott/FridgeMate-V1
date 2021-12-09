@@ -13,12 +13,19 @@ The welcome page allowed me to learn how to use the following CSS/Boostrap featu
 - Adding a background image to a container
 - Use of opacity to make text clear in the overlays
 - Learned how to use a timed Bootstrap carousel with information slides on FridgeMate
-- Use of '''display: grid;'''
+- Use of ```display: grid;``` to format the slides
 
 #### User registration and login:
-Users can get to the registration page via the menu at the top of the screen or the register button on the login page. 
+Users can get to the registration page via the menu at the top of the screen or the register button on the login page.
 
+Users will be required to enter the following information when registering:
+- Name
+- Email ***(must be unique)***
+- Username ***(5 character minimum and unique)***
+- Password ***(5 character minimum and must match password confirmation field)***
+- Confirm password ***(must match password field)***
 
+Javascript was used on the registration page to prevent a user from being able to submit the form unless the conditions above are all met. The submit button remains disabled via "```$(#submitBtn).prop("disabled", true)```" until the form data is accepted. Since a user can just go into the browsers developer tools and remove the disabled attribute, a backend safeguard was also applied to verify the same conditions.
 
 At the moment it has some basic functionality:
 - User registration which includes confirmation email (sends token linked to desired username)
