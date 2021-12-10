@@ -70,16 +70,14 @@ def check_email(email):
             result = 1
         else:
             result = 0
-    
         return str(result)
     else:
         profile = cur.fetchone()
-        if user_found != 0  and profile['username'] == session['username']:
-            result = 0
-        elif user_found != 0  and profile['username'] != session['username']:
+        # Check if a username is found and isn't the current users username
+        if user_found != 0  and profile['username'] != session['username']:
             result = 1
         else:
-            result=0
+            result = 0
         cur.close()
         return str(result)
 

@@ -15,6 +15,8 @@ The welcome page allowed me to learn how to use the following CSS/Boostrap featu
 - Learned how to use a timed Bootstrap carousel with information slides on FridgeMate
 - Use of ```display: grid;``` to format the slides
 
+The contents of the landing page can be found in ***templates/welcome.html***
+
 #### User registration and login:
 Users can get to the registration page via the menu at the top of the screen or the register button on the login page.
 
@@ -27,7 +29,9 @@ Users will be required to enter the following information when registering:
 
 Javascript was used on the registration page to prevent a user from being able to submit the form unless the conditions above are all met. The submit button remains disabled via "```$(#submitBtn).prop("disabled", true)```" until the form data is accepted. Since a user can just go into the browsers developer tools and remove the disabled attribute, a backend safeguard was also applied to verify the same conditions.
 
-After passing the registration form, the user will need to confirm their email by via a confirmation email containing a personalized link with a unique token created from their desired username. If the user tries to login before confirming their email, they will be notified that their account is locked until email is verified.
+The front-end contents of the registration form is located in ***templates/register.html***
+
+After passing the registration form, the user will need to confirm their email by via a confirmation email containing a personalized link with a unique token generated from their desired username. If the user tries to login before confirming their email, they will be notified that their account is locked until email is verified.
 
 If a user ever happens to forget their password, a forgot password link is located on the login page. The link redirects the user to a basic form where they will need to enter the email associated with their account. If the account is found, an email will be sent to the user with a personalized link with a unique token associated with their username. Clicking the link in the email will redirect the user to a "new password" page. The new password will still have to follow the restrictions put in place to the original password (5 character min).
 
@@ -60,3 +64,5 @@ The profile page started out with just the users name, username and email. As I 
 The "Edit Profile" button triggers a modal pop-up with a form pre-filled with the users current data. The notifications trigger threshold and frequency can be set on a range input within a pre-defined range. The email notifications can be turned off by sliding the notification trigger range all the way to the left.
 
 Users will also have the option to change their passwords from the profile page via the "Change Password" button. After clicking the button, a modal form pops up with three fields (Old password, New password, Confirm new password). The requirement for the old password is due to the fact that the user could've accidentaly left his account signed in and someone else may come along trying to change the password.
+
+#### Notification:
