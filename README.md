@@ -67,8 +67,19 @@ When an item is added to a users table, a simple calculation is done on the back
 #### User profile:
 The profile page started out with just the users name, username and email. As I implemented the email notification aspect of the app, I realized that the user should be in control of when and how often emails are sent out. These notification preferences are only displayed on the profile page, but can be updated along with the users name, username and email via the "Edit Profile" button.
 
+The contents of the profile page is located at ***templates/profile.html***. You'll find the two modals at the bottom of the file.
+
 The "Edit Profile" button triggers a modal pop-up with a form pre-filled with the users current data. The notifications trigger threshold and frequency can be set on a range input within a pre-defined range. The email notifications can be turned off by sliding the notification trigger range all the way to the left.
 
 Users will also have the option to change their passwords from the profile page via the "Change Password" button. After clicking the button, a modal form pops up with three fields (Old password, New password, Confirm new password). The requirement for the old password is due to the fact that the user could've accidentaly left his account signed in and someone else may come along trying to change the password.
 
-#### Notification:
+#### Notification system:
+The notification system consists of an email alert/update being sent out whenever an item falls within the users specified notification period (ex. 5 days before expiry). Users have the ability to customize their notification period and frequency of emails, so that they're not overwhelmed with an email everyday. They have the option to turn notifications off altogether by sliding the notification bar all the way to the left (image of example settings in previous section).
+
+A separate python app was written to perform a daily update of every active product in every users fridge. For each user who's fridge contains items within their specified notification period, an email will be sent out to provide the user with a summary of items expiring soon. An email will not be sent out unless the users desired notification frequency is respected (ex. if user sets frequency to every 3 days, they will receive max 1 email in any 3 day period even if new items are coming close to expiry). A user will not receive an email unless items are within the specified notification period.
+
+| Sample email notification |
+| :---: |
+| <img src="../static/images/sample_notification_email.JPG"> |
+
+
