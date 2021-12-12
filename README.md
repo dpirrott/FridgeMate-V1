@@ -80,6 +80,6 @@ A separate python app was written to perform a daily update of every active prod
 
 | Sample email notification |
 | :---: |
-| <img src="../static/images/sample_notification_email.JPG"> |
+| <img src="static/images/sample_notification_email.JPG" width="400" height="400"> |
 
 
