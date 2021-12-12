@@ -77,7 +77,7 @@ A sample profile and settings page can be found below
 
 | Sample profile page | Edit profile page | Change password |
 | :---: | :---: | :---: |
-| <img src="static/images/sample_profile.JPG" height="400"> | <img src="static/images/sample_profile_settings.JPG" height="400"> | <img src="static/images/profile_change_password.jpg" height="300"> |
+| <img src="static/images/sample_profile.JPG" height="325"> | <img src="static/images/sample_profile_settings.JPG" height="325"> | <img src="static/images/profile_change_password.jpg" height="300"> |
 
 #### Notification system:
 The notification system consists of an email alert/update being sent out whenever an item falls within the users specified notification period (ex. 5 days before expiry). Users have the ability to customize their notification period and frequency of emails, so that they're not overwhelmed with an email everyday. They have the option to turn notifications off altogether by sliding the notification bar all the way to the left (image of example settings in previous section).
