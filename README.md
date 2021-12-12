@@ -2,7 +2,9 @@
 ### Video demo: <URL HERE>
 ### Description:
 
-The motivation for this project came from a realization that I personally find it difficult to keep track of all the expiry dates for products in my fridge. FridgeMate is a solution to keeping track of any number of expriy dates for products in your fridge. Originally FridgeMate was going to be an iOS app, but upon realizing that swift was restricted to Mac OS, I decided to go with a web application with mobile responsiveness in mind. Originally the notification system was going to be through push notifications on iOS, but after switching to a web application, emails alerts seemed like the best option. 
+The motivation for this project came from a realization that I personally find it difficult to keep track of all the expiry dates for products in my fridge. FridgeMate is a solution to keeping track of any number of expriy dates for products in your fridge. Originally FridgeMate was going to be an iOS app, but upon realizing that swift was restricted to Mac OS, I decided to go with a web application with mobile responsiveness in mind. Originally the notification system was going to be through push notifications on iOS, but after switching to a web application, emails alerts seemed like the best option.
+
+FridgeMate is available on Heroku but since I'm using a free Mailgun account, I can only use 5 registered email addresses, therefore not everyone will be able to try the app. The full demo of the app can be found at the URL above.
 
 **The following sections will describe every aspect of FridgeMate from both a users standpoint and alittle description of what's happening in the background.**
 
@@ -29,7 +31,7 @@ Users will be required to enter the following information when registering:
 
 Javascript was used on the registration page to prevent a user from being able to submit the form unless the conditions above are all met. The submit button remains disabled via "```$(#submitBtn).prop("disabled", true)```" until the form data is accepted. Since a user can just go into the browsers developer tools and remove the disabled attribute, a backend safeguard was also applied to verify the same conditions.
 
-The front-end contents of the registration form is located in ***templates/register.html***
+The front-end contents of the registration form and login page are located at ***templates/register.html*** and ***templates/login.html*** respectively.
 
 After passing the registration form, the user will need to confirm their email by via a confirmation email containing a personalized link with a unique token generated from their desired username. If the user tries to login before confirming their email, they will be notified that their account is locked until email is verified.
 
@@ -38,16 +40,20 @@ If a user ever happens to forget their password, a forgot password link is locat
 #### Fridge view:
 The fridge view is the main page where users will be able to see all their products with expiry dates laid out in a data-table. Of course at first the users fridge will be empty and they will need to add products via the "add item" button. Everytime a user loads the fridge view page the days left column is updated for all items the user currently has in stock.
 
+The front-end contents of the fridge view page is located at ***templates/fridge_view.html***.
+
 A few features of the fridge view page are:
 - Insert
 - Search
 - Delete (checkbox style selection)
 - Sort via column
 
-After adding a few items, the user will have an operational expiry tracking system which will highlight items with certain colors based on their days remaining. An item with 5 days remaining will be highlighted yellow, while an item with 3 days remaining will be highlighted red. All other items with days left are highlighted green unless they're expired. Expired items are greyed out and put to the end of the table with a simple equation.
+After adding a few items, the user will have an operational expiry tracking system which will highlight items with certain colors based on their days remaining. An item with 5 days remaining will be highlighted yellow, while an item with 3 days remaining will be highlighted red. All other items with days left are highlighted green unless they're expired. Expired items are greyed out and put to the end of the table.
 
 #### Insert/add item:
 Selecting the "insert product" button redirects the user to page with two accordion options. Users will have the option of adding a new product to the fridge or a previously entered product (less effort required). 
+
+The contents of the add item page is located at ***templates/add_item.html***.
 
 The "Add new product" accordion does exactly as the name suggests, the user will be able to type the name of the product in the text field and enter an expiry date via the calendar input. The text input field is equipped with an autocomplete feature which scans a database table "foods" that contains food names to give quick select options. Until the text field and expiry date calendar field are filled in, the submit button will remain disabled via javascript. 
 After submitting the form through a post request, the item name and expiry date are added to an "items" table in the database. The new item name will be added to the global (relative to FridgeMate) "foods" table in the database so other users will be able to see that item in the autocomplete dropdown.

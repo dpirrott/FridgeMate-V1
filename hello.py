@@ -182,7 +182,7 @@ def register():
         token = get_reset_token(username)
 
         # Generate and send email through mailgun
-        send_simple_message("FridgeMate Registration Confirmation", username.capitalize(), str(email), token, "email.html")
+        send_simple_message("FridgeMate Registration Confirmation", username.capitalize(), str(email), token, "email.html", os.environ.get("API_BASE_URL"), os.environ.get("MAIL_API_KEY"),  os.environ.get("MAIL_ADDRESS"))
 
         flash(f'You are now registered as a new user {username}, confirmation email has been sent', 'success')
         return render_template('login.html')
