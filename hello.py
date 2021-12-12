@@ -366,7 +366,7 @@ def reset_password(token):
         cur.execute('UPDATE users SET password = %s WHERE username = %s', [password, username])
         mysql.connection.commit()
         cur.close()
-        flash('Password updated successfully')
+        flash('Password updated successfully', 'success')
         return render_template('login.html')
     else:
         user = verify_reset_token(token)
