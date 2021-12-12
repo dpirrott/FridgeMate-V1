@@ -33,6 +33,12 @@ Javascript was used on the registration page to prevent a user from being able t
 
 The front-end contents of the registration form and login page are located at ***templates/register.html*** and ***templates/login.html*** respectively.
 
+Sample image of registration page can be seen below:
+
+| Registration page | Login page |
+| :---: | :---: |
+| <img src="static/images/register_page.JPG" width="375"> | <img src="static/images/login_page.JPG" width="375"> |
+
 After passing the registration form, the user will need to confirm their email by via a confirmation email containing a personalized link with a unique token generated from their desired username. If the user tries to login before confirming their email, they will be notified that their account is locked until email is verified.
 
 If a user ever happens to forget their password, a forgot password link is located on the login page. The link redirects the user to a basic form where they will need to enter the email associated with their account. If the account is found, an email will be sent to the user with a personalized link with a unique token associated with their username. Clicking the link in the email will redirect the user to a "new password" page. The new password will still have to follow the restrictions put in place to the original password (5 character min).
@@ -41,6 +47,12 @@ If a user ever happens to forget their password, a forgot password link is locat
 The fridge view is the main page where users will be able to see all their products with expiry dates laid out in a data-table. Of course at first the users fridge will be empty and they will need to add products via the "add item" button. Everytime a user loads the fridge view page the days left column is updated for all items the user currently has in stock.
 
 The front-end contents of the fridge view page is located at ***templates/fridge_view.html***.
+
+A sample fridge is shown in the image below:
+
+| Sample fridge | After clicking delete products |
+| :---: | :---: |
+| <img src="static/images/sample_fridge_view.jpg" height="575"> | <img src="static/images/sample_fridge_delete.JPG" width="390" height="575"> |
 
 A few features of the fridge view page are:
 - Insert
@@ -54,6 +66,12 @@ After adding a few items, the user will have an operational expiry tracking syst
 Selecting the "insert product" button redirects the user to page with two accordion options. Users will have the option of adding a new product to the fridge or a previously entered product (less effort required). 
 
 The contents of the add item page is located at ***templates/add_item.html***.
+
+The following images provide a visual of the add product page:
+
+| Add product page | Add new product | Add previous product |
+| :---: | :---: | :---: |
+| <img src="static/images/add_item_page.JPG" width="375"> | <img src="static/images/sample_add_item.JPG" width="375"> | <img src="static/images/sample_add_previous.JPG" width="375"> |
 
 The "Add new product" accordion does exactly as the name suggests, the user will be able to type the name of the product in the text field and enter an expiry date via the calendar input. The text input field is equipped with an autocomplete feature which scans a database table "foods" that contains food names to give quick select options. Until the text field and expiry date calendar field are filled in, the submit button will remain disabled via javascript. 
 After submitting the form through a post request, the item name and expiry date are added to an "items" table in the database. The new item name will be added to the global (relative to FridgeMate) "foods" table in the database so other users will be able to see that item in the autocomplete dropdown.
@@ -73,7 +91,7 @@ The "Edit Profile" button triggers a modal pop-up with a form pre-filled with th
 
 Users will also have the option to change their passwords from the profile page via the "Change Password" button. After clicking the button, a modal form pops up with three fields (Old password, New password, Confirm new password). The requirement for the old password is due to the fact that the user could've accidentaly left his account signed in and someone else may come along trying to change the password.
 
-A sample profile and settings page can be found below
+A sample profile, edit profile and change password page can be found below:
 
 | Sample profile page | Edit profile page | Change password |
 | :---: | :---: | :---: |
