@@ -41,7 +41,19 @@ Sample image of registration page can be seen below:
 
 After passing the registration form, the user will need to confirm their email by via a confirmation email containing a personalized link with a unique token generated from their desired username. If the user tries to login before confirming their email, they will be notified that their account is locked until email is verified.
 
+A user will receive the following confirmation email after registering:
+
+| Confirmation email |
+| :---: |
+| <img src="static/images/confirmation_email.JPG"> |
+
 If a user ever happens to forget their password, a forgot password link is located on the login page. The link redirects the user to a basic form where they will need to enter the email associated with their account. If the account is found, an email will be sent to the user with a personalized link with a unique token associated with their username. Clicking the link in the email will redirect the user to a "new password" page. The new password will still have to follow the restrictions put in place to the original password (5 character min).
+
+The following images encapsulate the forgot password procedure:
+
+| Request password reset | Reset password confirmation email | Changing password |
+| :---: | :---: | :---: |
+| <img src="static/images/forgot_password_request.JPG" width="375"> | <img src="static/images/reset_password_email.JPG" width="375"> | <img src="static/images/reset_password_page.JPG" width="375"> |
 
 #### Fridge view:
 The fridge view is the main page where users will be able to see all their products with expiry dates laid out in a data-table. Of course at first the users fridge will be empty and they will need to add products via the "add item" button. Everytime a user loads the fridge view page the days left column is updated for all items the user currently has in stock.
