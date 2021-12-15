@@ -8,7 +8,7 @@ FridgeMate is available on Heroku but since I'm using a free Mailgun account, I 
 
 **The following sections will describe every aspect of FridgeMate from both a users standpoint and alittle description of what's happening in the background.**
 
-***hello.py*** is the main app containing the entire backend of the app. ***email_alert.py*** is a second app created only to be run on the heroku scheduler for updating the database once per day and sending out notification emails if necessary. Within ***templates***, you'll find all ***.html*** files that make up the app. Within ***static***, you'll find the main css file named ***style.css*** as well as a folder named ***images*** which contains every image used in the app and this README.md file.
+***hello.py*** is the main app containing the entire backend of the app. ***email_alert.py*** is a second app created only to be run on the heroku scheduler for updating the database once per day and sending out notification emails if necessary. Within ***templates***, you'll find all ***.html*** files that make up the app. Within ***static***, you'll find the main css file named ***style.css*** as well as a folder named ***images*** which contains every image used in the app and this readme.md file.
 
 I've omitted my ***.env*** file, which contains api keys and private database information, for privacy/security concerns, but if it's needed for grading purposes please reach out to me.
 
