@@ -14,6 +14,7 @@ load_dotenv()
 app = Flask(__name__)
 mail = Mail(app)
 
+# Link MySQL database to app
 app.config['MYSQL_HOST'] = os.environ.get('MySQL_HOST')
 app.config['MYSQL_USER'] = os.environ.get("MySQL_USER")
 app.config['MYSQL_PASSWORD'] = os.environ.get("MySQL_PASSWORD")
@@ -23,8 +24,6 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 app.secret_key = 'super secret key'
 app.config['SESSION_TYPE'] = 'filesystem'
 
-
-mail = Mail(app)
 mysql = MySQL(app)
 
 
@@ -33,11 +32,7 @@ mysql = MySQL(app)
 def welcome():
     return render_template('welcome.html')
 
-# About
-@app.route('/about')
-def about():
-    return render_template('about.html')
-
+# Following Mailgun's standard api email format
 def send_simple_message(subject, username, email, token, html, url, api, address):
     return requests.post(
         url,
@@ -145,7 +140,7 @@ def register():
             message = f"Email \"{str(email)}\" is already being used."
             return render_template('register.html', message=message)
 
-        # Make sure username is > 5
+        # Make sure username is >= 5 characters
         if len(username) < 5:
             message = "Username must be 5 characters minimum."
             return render_template('register.html', message=message)
@@ -155,17 +150,16 @@ def register():
             message = f"Username \"{str(username)}\" already taken"
             return render_template('register.html', message=message)
 
-        # Make sure password > 5 characters
+        # Make sure password >= 5 characters
         if len(password) < 5:
             message = "Password must be 5 characters minimum"
             return render_template('register.html', message=message)
 
+        # Make sure password matches confirm password
         if password != confirm_password:
             message = "The two password fields must be identical"
             return render_template('register.html', message=message)
         
-
-
         # Create cursor for database
         curr = mysql.connection.cursor()
 
@@ -189,14 +183,18 @@ def register():
     else:
         return render_template('register.html')
 
+# Confirm account verification email link is actually linked to an account
 @app.route('/verify_email/<token>', methods=['GET'])
 def verify_email(token):
 
     # Obtain username from token
     user = verify_reset_token(token)
+
+    # Ensure confirmation link isn't expired
     if user == None:
         flash('The link has expired, you may send another confirmation link below', 'danger')
         return redirect(url_for('resendConfirmation'))
+
     username = user['username']
 
     # Initialize a cursor to verify account
@@ -257,7 +255,7 @@ def login():
             error = "Password field cannot be blank"
             return render_template('/login.html', error=error)
 
-        # First letter isn't case sensitive
+        # First letter isn't case sensitive so must check lowercase and uppercase first letter
         username_un_capitalize = username[0].lower() + username[1:]
 
         # Create cursor for database
@@ -293,15 +291,14 @@ def login():
     else:
         return render_template('login.html')
 
-# Generate reset token
+# Generate reset token for forgotten passwords and registeration
 def get_reset_token(user, expires=5000):
     return jwt.encode({'reset_password': user, 'exp': time() + expires}, key=str(os.environ.get('SECRET_KEY')), algorithm="HS256")
 
-# Verify reset token
+# Verify reset token from user clicking link in email
 def verify_reset_token(token):
     try:
         username = jwt.decode(token, key=str(os.environ.get('SECRET_KEY')), algorithms="HS256")['reset_password']
-        print(username)
     except Exception as e:
         print(e)
         print('token has expired')
@@ -448,6 +445,7 @@ def edit_profile():
         modal = 1
         return render_template('profile.html', profile=profile, modal2=modal, error=error)
 
+    # Make sure somebody didn't overide alert settings outside their limits
     if alert_threshold > 7 or alert_threshold < 0:
         error="Notification trigger out of range (Must be between 0 - 7)"
         cur.execute("SELECT * FROM users WHERE username = %s", [oldUsername])
@@ -464,6 +462,7 @@ def edit_profile():
         modal = 1
         return render_template('profile.html', profile=profile, modal2=modal, error=error)
 
+    # Make sure email isn't already in use
     if checkEmail(email, oldUsername) > 0:
         error = f"Email {str(email)} is taken"
         cur.execute("SELECT * FROM users WHERE username = %s", [oldUsername])
@@ -477,6 +476,8 @@ def edit_profile():
 
     # Verify new username is actually available (if someone bypasses JS safeguard)
     taken = cur.execute('SELECT * FROM users WHERE username = %s or username = %s or username = %s', [username, username.capitalize(), lower])
+    
+    # Check if desired username is found in system, and isn't the current users username
     if taken > 0 and username != oldUsername:
         cur.execute('SELECT * FROM users WHERE username = %s', [oldUsername])
         profile = cur.fetchone()
@@ -514,7 +515,7 @@ def changePassword():
         cur.close()
         return render_template('profile.html', error=error, profile=user, modal=modal, oldPassword=oldPasswordEntered, newPassword=newPassword, confirmPassword=confirmNewPassword)
        
-    # Make sure new password and conrimation match (this would happen if someone bypassed javascript controls)
+    # Make sure new password and confirmation match (the only time they wouldnt match is if someone bypassed javascript controls)
     if newPassword != confirmNewPassword:
         modal=1
         error = "Passwords dont match lol, you know you're web programming don't you"
@@ -550,16 +551,7 @@ def logout():
     flash('You are now logged out', 'success')
     return redirect('login')
 
-# User dashboard
-@app.route('/dashboard', methods=['POST', 'GET'])
-@login_required
-def dashboard():
-    if request.method == 'POST':
-
-        return render_template('dashboard.html')
-    else:
-        return render_template('dashboard.html')
-    
+# Calculate the days left on all products in a specific users fridge based on their user_id
 def days_left(id):
 
     # Create local connection to db
@@ -569,7 +561,7 @@ def days_left(id):
     cur.execute("SELECT * FROM items WHERE user_id = %s", [id])
 
     userProducts = cur.fetchall()
-    i = 1
+
     # update days left for each product
     for product in userProducts:
         dateExp = product['expiry_date']  
@@ -601,7 +593,6 @@ def add_item(tree):
             dateExp = request.form['previousEntryDate']
 
             # Verify a previous entry is selected and date is filled in
-
             if not dateExp:
                 flash('Expiry needs to be filled in', 'danger')
                 return redirect(url_for('add_item'))
@@ -610,9 +601,11 @@ def add_item(tree):
                 flash('Previous item must be selected', 'danger')
                 return redirect(url_for('add_item'))
 
+            # Put todays date and selected expiry date into datatime objects
             dToday = datetime.now(tz=None)
             dExp = datetime.strptime(dateExp, '%Y-%m-%d')
 
+            # Calculate days left by subtracting difference between expiry date and current date, then convert to days
             diff = dExp.date() - dToday.date()
             daysLeft = diff.days
 
@@ -632,6 +625,7 @@ def add_item(tree):
             # Close connection
             cur.close()
 
+            # flag for triggering a modal
             tree = 1
 
             flash(f'{entry} was successfully added to your fridge!  {daysLeft} days left', 'success')
@@ -645,9 +639,11 @@ def add_item(tree):
             user_id = session['id']
             dateExp = request.form['newEntryDate']
 
+            # Put todays date and selected expiry date into datatime objects
             dToday = datetime.now(tz=None)
             dExp = datetime.strptime(dateExp, '%Y-%m-%d')
 
+            # Calculate days left by subtracting difference between expiry date and current date, then convert to days
             diff = dExp.date() - dToday.date()
             daysLeft = diff.days
 
@@ -657,11 +653,10 @@ def add_item(tree):
             # Execute the insertion of the new user data into items table
             cur.execute("INSERT INTO items (user_id, item, expiry_date, days_left) VALUES (%s, %s, %s, %s)", (user_id, entry, dExp.date(), daysLeft))
 
-            # Check if food name has been entered before or is already in database
+            # Check if food name has been entered in before or is already in database
             verify = cur.execute("SELECT foodname FROM foods WHERE foodname = %s", [entry])
-
             if verify < 1:
-                # Execute the insertion of the new food data into foods table
+                # Execute the insertion of the new food data into foods table for improving autocomplete list
                 cur.execute("INSERT INTO foods (foodname) VALUES (%s)", [entry.capitalize()])
 
             # Gather all items the user has entered into fridge
@@ -680,13 +675,13 @@ def add_item(tree):
             return redirect(url_for('add_item', tree=tree))
         
         else:
-            error = 'Something went wrong.. please try again.'
+            flash('Something went wrong.. please try again.','danger')
             return redirect(url_for('add_item'))
 
     # Request GET method    
     else:
         
-        # Hold user ID in variable
+        # Store user ID in variable
         user_id = session['id']
 
         # Create cursor for database
@@ -706,7 +701,7 @@ def add_item(tree):
             # Close connection
             cur.close()
             
-            # Check if modal should be in visible state
+            # Check if modal should be in visible state, tree is a flag for triggering a modal
             if tree == "1":
                 tree = 1 # Convert str to int
                 return render_template('add_item.html', previousItems=previousItems, tree=tree)
@@ -737,9 +732,11 @@ def fridge_view():
 
     return render_template('fridge_view.html', userProducts=userProducts)
 
+# Added autocomplete functionality for the add new item text input
 @app.route('/autocomplete', methods=['GET'])
 def autocomplete():
 
+    # Users word in progress for autocomplete list
     search = request.args.get('input')
 
     # Create cursor for database
@@ -748,7 +745,7 @@ def autocomplete():
     # Find matching results in the foodname table
     matches = curr.execute("SELECT foodname FROM foods WHERE foodname LIKE %s LIMIT 5", ['%' + search + '%'])
     if matches < 1:
-        # Close connection
+        # Close connection, potentially a new item being entered
         curr.close()
         results = []
         return jsonify(results)
@@ -756,13 +753,15 @@ def autocomplete():
         results = []
         totalMatches = curr.fetchall()
 
+        # Store all potential search results in results
         for match in totalMatches:
             results.append(match['foodname'])
         
-        # Close connection
+        # Close connection and send jsonified list of results
         curr.close()
         return jsonify(results)
 
+# Ajax post request for deleting entries on the fridgeview page
 @app.route('/deleteEntries', methods=['POST'])
 def deleteEntries():
     data = request.get_json()
@@ -783,7 +782,6 @@ def deleteEntries():
     cur.close()
 
     return message
-
 
 if __name__ == '__main__':
     app.run(debug=True)

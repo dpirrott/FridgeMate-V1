@@ -1,6 +1,6 @@
 
 from flask import Flask, app, render_template
-from dotenv import load_dotenv, find_dotenv
+from dotenv import load_dotenv
 import os
 import requests
 from datetime import datetime
@@ -50,6 +50,7 @@ def daysLeftAll():
     for user in users:
         days_left(user["id"])
 
+# Following Mailgun's standard api email format
 def send_simple_message(subject, username, email, items, html, url, api, address):
     return requests.post(
         url,
@@ -104,8 +105,8 @@ def sendEmailAlerts():
     cur.close()
     
 
-# Main program to be run daily #
-################################  
+#                    Main program to be run daily                     #
+#######################################################################  
 
 #establishing the connection
 conn = mysql.connector.connect(user=os.environ.get("MySQL_USER"), password=os.environ.get("MySQL_PASSWORD"), host=os.environ.get('MySQL_HOST'), database='heroku_7e98696366a4e2e')

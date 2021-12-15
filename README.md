@@ -1,5 +1,5 @@
-# FridgeMate Expiry Tracker
-### Video demo: <URL HERE>
+# FridgeMate Expiry Tracker - CS50 Final Project Submission
+### Video demo: https://youtu.be/YHippw6lE_o
 ### Description:
 
 The motivation for this project came from a realization that I personally find it difficult to keep track of all the expiry dates for products in my fridge. FridgeMate is a solution to keeping track of any number of expriy dates for products in your fridge. Originally FridgeMate was going to be an iOS app, but upon realizing that swift was restricted to Mac OS, I decided to go with a web application with mobile responsiveness in mind. Originally the notification system was going to be through push notifications on iOS, but after switching to a web application, emails alerts seemed like the best option.
@@ -107,15 +107,17 @@ A sample profile, edit profile and change password page can be found below:
 
 | Sample profile page | Edit profile page | Change password |
 | :---: | :---: | :---: |
-| <img src="static/images/sample_profile.JPG" height="325"> | <img src="static/images/sample_profile_settings.JPG" height="325"> | <img src="static/images/profile_change_password.jpg" height="300"> |
+| <img src="static/images/sample_profile.JPG" width="375"> | <img src="static/images/sample_profile_settings.JPG" width="375"> | <img src="static/images/profile_change_password.jpg" width="375"> |
 
 #### Notification system:
 The notification system consists of an email alert/update being sent out whenever an item falls within the users specified notification period (ex. 5 days before expiry). Users have the ability to customize their notification period and frequency of emails, so that they're not overwhelmed with an email everyday. They have the option to turn notifications off altogether by sliding the notification bar all the way to the left (image of example settings in previous section).
 
-A separate python app was written to perform a daily update of every active product in every users fridge. For each user who's fridge contains items within their specified notification period, an email will be sent out to provide the user with a summary of items expiring soon. An email will not be sent out unless the users desired notification frequency is respected (ex. if user sets frequency to every 3 days, they will receive max 1 email in any 3 day period even if new items are coming close to expiry). A user will not receive an email unless items are within the specified notification period.
+A separate python app called alert_email.py was written to perform a daily update of every active product in every users fridge. For each user who's fridge contains items within their specified notification period, an email will be sent out to provide the user with a summary of items expiring soon. An email will not be sent out unless the users desired notification frequency is respected (ex. if user sets frequency to every 3 days, they will receive max 1 email in any 3 day period even if new items are coming close to expiry). A user will not receive an email unless items are within the specified notification period.
+
+The alert_email.py app has been set to run once daily at 12:00pm (PST) using the Heroku Scheduler.
 
 | Sample email notification |
 | :---: |
-| <img src="static/images/sample_notification_email.JPG" width="400" height="400"> |
+| <img src="static/images/sample_notification_email.JPG" width="492" height="437"> |
 
 
