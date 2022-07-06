@@ -49,13 +49,13 @@ def check_email(email):
         input = str(email)
     else:
         input = str(request.form['input'])
-    
+
     # Create cursor for database
     cur = mysql.connection.cursor()
 
     # Check if username entered in form matches anything in database
     user_found = cur.execute('SELECT * FROM users WHERE email = %s', [input])
-    
+
     # To differentiate between a user editing his profile and someone registering a new profile
     if "logged_in" not in session:
         # Close the connection
@@ -101,7 +101,7 @@ def verify_username(username):
             result = 1
         else:
             result = 0
-    
+
         return str(result)
     else:
         profile = cur.fetchone()
@@ -125,16 +125,16 @@ def register():
         username = request.form['username']
         password = request.form['password']
         confirm_password = request.form['confirm']
-        encrypt_password = sha256_crypt.encrypt(str(password))
+        encrypt_password = sha256_crypt.hash(str(password))
         dToday = datetime.now(tz=None).date()
-        
+
         # Make sure form data is acceptable
 
         # Make sure no blank fields
         if not name or not email or not username or not password:
             message = "Registration fields cannot be blank"
             return render_template('register.html', message=message)
-        
+
         # Make sure email is unique
         if check_email(email) != "0":
             message = f"Email \"{str(email)}\" is already being used."
@@ -144,7 +144,7 @@ def register():
         if len(username) < 5:
             message = "Username must be 5 characters minimum."
             return render_template('register.html', message=message)
-        
+
         # Make sure username is unique
         if verify_username(username) == "1":
             message = f"Username \"{str(username)}\" already taken"
@@ -159,7 +159,7 @@ def register():
         if password != confirm_password:
             message = "The two password fields must be identical"
             return render_template('register.html', message=message)
-        
+
         # Create cursor for database
         curr = mysql.connection.cursor()
 
@@ -215,14 +215,14 @@ def resendConfirmation():
         if not email:
             error = 'Email field cannot be blank'
             return render_template('resendConfirmation.html', error=error)
-        
+
         # Verify email has been registered in database
         cur = mysql.connection.cursor()
         found = cur.execute('SELECT * FROM users WHERE email = %s', [email])
         if found == 0:
             error='Email isn\t registered to an account (Go to \'Menu\'->\'Register\')'
             return render_template('resendConfirmation.html', error=error)
-        
+
         user = cur.fetchone()
         username = user['username']
         # Generate unique token for user
@@ -250,7 +250,7 @@ def login():
         if not username:
             error = "Username cannot be left blank"
             return render_template('/login.html', error=error)
-        
+
         if not password_entered:
             error = "Password field cannot be blank"
             return render_template('/login.html', error=error)
@@ -263,7 +263,7 @@ def login():
 
         # Verify that the username entered in the form exists in the database
         user_found = cur.execute('SELECT * FROM users WHERE username = %s OR username = %s OR username = %s', [username, username.capitalize(), username_un_capitalize])
-        
+
         if user_found > 0:
             data = cur.fetchone()
             password = data['password']
@@ -353,12 +353,12 @@ def reset_password(token):
         if not newPass or not confirmPass:
             error='Password fields cannot be blank.'
             return render_template('password_change.html', error=error, token=token)
-        
+
         if newPass != confirmPass:
             error = 'Password fields must match.'
             return render_template('password_change.html', error=error, token=token)
 
-        password = sha256_crypt.encrypt(str(newPass))
+        password = sha256_crypt.hash(str(newPass))
         cur = mysql.connection.cursor()
         cur.execute('UPDATE users SET password = %s WHERE username = %s', [password, username])
         mysql.connection.commit()
@@ -370,7 +370,7 @@ def reset_password(token):
         if not user:
             flash('No user found')
             return redirect(url_for('login'))
-        
+
         return render_template('password_change.html', token=token)
 
 # User profile
@@ -390,7 +390,7 @@ def profile():
 
 # Takes in an email address as a parameter and checks if it already exists in the database
 def checkEmail(email, username):
-    
+
     # Create cursor
     cur = mysql.connection.cursor()
 
@@ -407,7 +407,7 @@ def checkEmail(email, username):
 @app.route('/edit_profile', methods=['POST'])
 @login_required
 def edit_profile():
-    
+
     # Convert form data to easy to read variables
     name = request.form['name']
     username = request.form['username']
@@ -428,7 +428,7 @@ def edit_profile():
         cur.close()
         modal = 1
         return render_template('profile.html', profile=profile, modal2=modal, error=error)
-    
+
     if not username:
         error = "Username field cannot be blank"
         cur.execute("SELECT * FROM users WHERE username = %s", [oldUsername])
@@ -436,7 +436,7 @@ def edit_profile():
         cur.close()
         modal = 1
         return render_template('profile.html', profile=profile, modal2=modal, error=error)
-    
+
     if not email:
         error = "Email field cannot be blank"
         cur.execute("SELECT * FROM users WHERE username = %s", [oldUsername])
@@ -476,7 +476,7 @@ def edit_profile():
 
     # Verify new username is actually available (if someone bypasses JS safeguard)
     taken = cur.execute('SELECT * FROM users WHERE username = %s or username = %s or username = %s', [username, username.capitalize(), lower])
-    
+
     # Check if desired username is found in system, and isn't the current users username
     if taken > 0 and username != oldUsername:
         cur.execute('SELECT * FROM users WHERE username = %s', [oldUsername])
@@ -485,7 +485,7 @@ def edit_profile():
         modal = 1
         error = f'The username {username} is already taken.'
         return render_template('profile.html', profile=profile, modal2=modal, error=error)
-    else:        
+    else:
         cur.execute('UPDATE users SET name = %s, username = %s, email = %s, alert_threshold = %s, min_days_between_alerts = %s WHERE id = %s', [name, username, email, alert_threshold, alert_frequency, user_id])
         session['username'] = username
         mysql.connection.commit()
@@ -514,7 +514,7 @@ def changePassword():
         error = "Old password cannot be blank"
         cur.close()
         return render_template('profile.html', error=error, profile=user, modal=modal, oldPassword=oldPasswordEntered, newPassword=newPassword, confirmPassword=confirmNewPassword)
-       
+
     # Make sure new password and confirmation match (the only time they wouldnt match is if someone bypassed javascript controls)
     if newPassword != confirmNewPassword:
         modal=1
@@ -522,12 +522,12 @@ def changePassword():
         cur.close()
         return render_template('profile.html', error=error, profile=user, modal=modal, oldPassword=oldPasswordEntered, newPassword=newPassword, confirmPassword=confirmNewPassword)
 
-    # Need to confirm old password matches before this change can be applied  
+    # Need to confirm old password matches before this change can be applied
     oldPassword = user['password']
     if sha256_crypt.verify(oldPasswordEntered, oldPassword):
-        newPass = sha256_crypt.encrypt(str(newPassword))
+        newPass = sha256_crypt.hash(str(newPassword))
         cur.execute('UPDATE users SET password = %s WHERE username = %s', [newPass, username])
-        
+
         # Commit data to db
         mysql.connection.commit()
 
@@ -536,7 +536,7 @@ def changePassword():
 
         flash('Password changed successfully', 'success')
         return render_template('login.html')
-    
+
     else:
         error = "Old Password is incorrect"
         cur.close()
@@ -564,14 +564,14 @@ def days_left(id):
 
     # update days left for each product
     for product in userProducts:
-        dateExp = product['expiry_date']  
+        dateExp = product['expiry_date']
         dToday = datetime.now(tz=None)
         daysLeft = (dateExp - dToday.date()).days
         cur.execute("UPDATE items SET days_left = %s WHERE item_id = %s AND deleted = %s", (daysLeft, product['item_id'], "no"))
-    
+
     # Commit queries
     mysql.connection.commit()
-    
+
     # Close connection
     cur.close()
 
@@ -582,7 +582,7 @@ def add_item(tree):
 
     # Request POST method
     if request.method == 'POST':
-        
+
         # Check which hidden field value was selected
         # If previous entry submitted
         if request.form['entryButton'] == 'previous':
@@ -596,7 +596,7 @@ def add_item(tree):
             if not dateExp:
                 flash('Expiry needs to be filled in', 'danger')
                 return redirect(url_for('add_item'))
-            
+
             if entry == 'nothing':
                 flash('Previous item must be selected', 'danger')
                 return redirect(url_for('add_item'))
@@ -630,7 +630,7 @@ def add_item(tree):
 
             flash(f'{entry} was successfully added to your fridge!  {daysLeft} days left', 'success')
             return redirect(url_for('add_item', tree=tree))
-        
+
         # Else if new entry submitted
         elif request.form['entryButton'] == 'new':
 
@@ -673,14 +673,14 @@ def add_item(tree):
 
             flash(f'{entry} was successfully added to your fridge!  {daysLeft} days left', 'success')
             return redirect(url_for('add_item', tree=tree))
-        
+
         else:
             flash('Something went wrong.. please try again.','danger')
             return redirect(url_for('add_item'))
 
-    # Request GET method    
+    # Request GET method
     else:
-        
+
         # Store user ID in variable
         user_id = session['id']
 
@@ -692,7 +692,7 @@ def add_item(tree):
 
         if resultCount < 1:
             tree = 0
-            return render_template('add_item.html', tree=tree)      
+            return render_template('add_item.html', tree=tree)
         else:
 
             # Store users previous items in a dictionary
@@ -700,7 +700,7 @@ def add_item(tree):
 
             # Close connection
             cur.close()
-            
+
             # Check if modal should be in visible state, tree is a flag for triggering a modal
             if tree == "1":
                 tree = 1 # Convert str to int
@@ -708,7 +708,7 @@ def add_item(tree):
             else:
                 tree = 0
                 return render_template('add_item.html', previousItems=previousItems, tree=tree)
-            
+
 # Fridge view
 @app.route('/fridge_view')
 @login_required
@@ -726,7 +726,7 @@ def fridge_view():
     # Gather users personal inventory
     cur.execute("SELECT * FROM items WHERE user_id = %s ORDER BY days_left ASC", [user_id])
     userProducts = cur.fetchall()
-    
+
     # Close connection to db
     cur.close()
 
@@ -756,7 +756,7 @@ def autocomplete():
         # Store all potential search results in results
         for match in totalMatches:
             results.append(match['foodname'])
-        
+
         # Close connection and send jsonified list of results
         curr.close()
         return jsonify(results)
