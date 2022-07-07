@@ -21,7 +21,7 @@
                 <h3>Welcome {{ username }},</h3>
                 <p>You've successfully registered an account with FridgeMate.</p>
                 <p style="margin-bottom: 10px;">Please click the following link to confirm your email,</p>
-                <a href="{{ url_for('verify_email', token=token, _external=True) }}"><button style="background-color: black; color: white; padding: 5px; font-weight: 700; border-radius: 10px;  margin-bottom: 10px;">Confirm</button></a>
+                <a href="{{ url_for('userAuth.verify_email', token=token, _external=True) }}"><button style="background-color: black; color: white; padding: 5px; font-weight: 700; border-radius: 10px;  margin-bottom: 10px;">Confirm</button></a>
             </td>
             <td style="width:10px;"></td>
         </tr>
