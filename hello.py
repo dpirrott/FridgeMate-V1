@@ -32,87 +32,87 @@ mysql = MySQL(app)
 def welcome():
     return render_template('welcome.html')
 
-# Following Mailgun's standard api email format
-def send_simple_message(subject, username, email, token, html, url, api, address):
-    return requests.post(
-        url,
-        auth=("api", api),
-        data={"from": address,
-              "to": [email],
-              "subject": subject,
-              "html": render_template(html, username=username.capitalize(), token=token)})
+# # Following Mailgun's standard api email format
+# def send_simple_message(subject, username, email, token, html, url, api, address):
+#     return requests.post(
+#         url,
+#         auth=("api", api),
+#         data={"from": address,
+#               "to": [email],
+#               "subject": subject,
+#               "html": render_template(html, username=username.capitalize(), token=token)})
 
-# Check email availability
-@app.route('/check_email/<email>', methods=['POST'])
-def check_email(email):
-    if email != "False":
-        input = str(email)
-    else:
-        input = str(request.form['input'])
+# # Check email availability
+# @app.route('/check_email/<email>', methods=['POST'])
+# def check_email(email):
+#     if email != "False":
+#         input = str(email)
+#     else:
+#         input = str(request.form['input'])
 
-    # Create cursor for database
-    cur = mysql.connection.cursor()
+#     # Create cursor for database
+#     cur = mysql.connection.cursor()
 
-    # Check if username entered in form matches anything in database
-    user_found = cur.execute('SELECT * FROM users WHERE email = %s', [input])
+#     # Check if username entered in form matches anything in database
+#     user_found = cur.execute('SELECT * FROM users WHERE email = %s', [input])
 
-    # To differentiate between a user editing his profile and someone registering a new profile
-    if "logged_in" not in session:
-        # Close the connection
-        cur.close()
+#     # To differentiate between a user editing his profile and someone registering a new profile
+#     if "logged_in" not in session:
+#         # Close the connection
+#         cur.close()
 
-        if user_found != 0:
-            result = 1
-        else:
-            result = 0
-        return str(result)
-    else:
-        profile = cur.fetchone()
-        # Check if a username is found and isn't the current users username
-        if user_found != 0  and profile['username'] != session['username']:
-            result = 1
-        else:
-            result = 0
-        cur.close()
-        return str(result)
+#         if user_found != 0:
+#             result = 1
+#         else:
+#             result = 0
+#         return str(result)
+#     else:
+#         profile = cur.fetchone()
+#         # Check if a username is found and isn't the current users username
+#         if user_found != 0  and profile['username'] != session['username']:
+#             result = 1
+#         else:
+#             result = 0
+#         cur.close()
+#         return str(result)
 
-# Check username availability
-@app.route('/verify_username/<username>', methods=['POST'])
-def verify_username(username):
-    if username != "False":
-        input = str(username)
-    else:
-        input = str(request.form['input'])
+# # Check username availability
+# @app.route('/verify_username/<username>', methods=['POST'])
+# def verify_username(username):
+#     if username != "False":
+#         input = str(username)
+#     else:
+#         input = str(request.form['input'])
 
-    # Create cursor for database
-    cur = mysql.connection.cursor()
-    input_un_capitalize = input[0].lower() + input[1:]
-    input_capitalize = input.capitalize()
+#     # Create cursor for database
+#     cur = mysql.connection.cursor()
+#     input_un_capitalize = input[0].lower() + input[1:]
+#     input_capitalize = input.capitalize()
 
-    # Check if username entered in form matches anything in database
-    user_found = cur.execute('SELECT * FROM users WHERE username = %s or username = %s or username = %s', [input, input_capitalize, input_un_capitalize])
+#     # Check if username entered in form matches anything in database
+#     user_found = cur.execute('SELECT * FROM users WHERE username = %s or username = %s or username = %s', [input, input_capitalize, input_un_capitalize])
 
-    # To differentiate between a user editing his profile and someone registering a new profile
-    if "logged_in" not in session:
-        # Close the connection
-        cur.close()
+#     # To differentiate between a user editing his profile and someone registering a new profile
+#     if "logged_in" not in session:
+#         # Close the connection
+#         cur.close()
 
-        if user_found != 0:
-            result = 1
-        else:
-            result = 0
+#         if user_found != 0:
+#             result = 1
+#         else:
+#             result = 0
 
-        return str(result)
-    else:
-        profile = cur.fetchone()
-        if user_found != 0  and profile['username'] == session['username']:
-            result = 0
-        elif user_found != 0  and profile['username'] != session['username']:
-            result = 1
-        else:
-            result=0
-        cur.close()
-        return str(result)
+#         return str(result)
+#     else:
+#         profile = cur.fetchone()
+#         if user_found != 0  and profile['username'] == session['username']:
+#             result = 0
+#         elif user_found != 0  and profile['username'] != session['username']:
+#             result = 1
+#         else:
+#             result=0
+#         cur.close()
+#         return str(result)
 
 # Register user
 @app.route('/register', methods=['GET', 'POST'])
