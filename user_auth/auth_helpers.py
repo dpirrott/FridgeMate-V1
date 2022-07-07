@@ -1,8 +1,9 @@
 from flask import render_template
 import os, jwt
-from time import time
-from hello import mysql
 import requests
+from time import time
+from flask_mysqldb import MySQL
+mysql = MySQL()
 
 # Following Mailgun's standard api email format
 def send_simple_message(subject, username, email, token, html, url, api, address):

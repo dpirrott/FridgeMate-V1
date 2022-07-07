@@ -1,12 +1,11 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for, session
 from passlib.hash import sha256_crypt
 from datetime import datetime
-from .auth_helpers import send_simple_message, get_reset_token, verify_reset_token
+from .auth_helpers import send_simple_message, get_reset_token, verify_reset_token, mysql
 import os
 
-from hello import mysql
 
-userAuth = Blueprint('userAuth', __name__, url_prefix='/')
+userAuth = Blueprint('userAuth', __name__, url_prefix='/', template_folder='./templates')
 
 # Register user
 @userAuth.route('/register', methods=['GET', 'POST'])
