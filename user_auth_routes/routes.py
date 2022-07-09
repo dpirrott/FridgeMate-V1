@@ -1,14 +1,15 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for, session
 from passlib.hash import sha256_crypt
 from datetime import datetime
+from helpers import login_required
 from .auth_helpers import send_simple_message, get_reset_token, verify_reset_token, mysql
 import os
 
 
-userAuth = Blueprint('userAuth', __name__, url_prefix='/', template_folder='./templates')
+userAuthRoutes = Blueprint('userAuthRoutes', __name__, url_prefix='/', template_folder='./templates')
 
 # Register user
-@userAuth.route('/register', methods=['GET', 'POST'])
+@userAuthRoutes.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
 
@@ -77,7 +78,7 @@ def register():
         return render_template('register.html')
 
 # Log-in
-@userAuth.route('/login', methods=['POST', 'GET'])
+@userAuthRoutes.route('/login', methods=['POST', 'GET'])
 def login():
 
     if request.method == 'POST':
@@ -118,7 +119,7 @@ def login():
                 session['username'] = data['username']
                 flash(f'Welcome {username.capitalize()}', 'success')
                 cur.close()
-                return redirect(url_for('fridge_view'))
+                return redirect(url_for('coreRoutes.fridge_view'))
             else:
                 cur.close()
                 error = 'Incorrect password'
@@ -131,8 +132,17 @@ def login():
     else:
         return render_template('login.html')
 
+# Log-out
+@userAuthRoutes.route('/logout')
+@login_required
+def logout():
+    session.clear()
+    flash('You are now logged out', 'success')
+    return redirect('login')
+
+
 # Check email availability
-@userAuth.route('/check_email/<email>', methods=['POST'])
+@userAuthRoutes.route('/check_email/<email>', methods=['POST'])
 def check_email(email):
     if email != "False":
         input = str(email)
@@ -166,7 +176,7 @@ def check_email(email):
         return str(result)
 
 # Check username availability
-@userAuth.route('/verify_username/<username>', methods=['POST'])
+@userAuthRoutes.route('/verify_username/<username>', methods=['POST'])
 def verify_username(username):
     if username != "False":
         input = str(username)
@@ -204,7 +214,7 @@ def verify_username(username):
         return str(result)
 
 # Verify users email token is valid
-@userAuth.route('/verify_email/<token>', methods=['GET'])
+@userAuthRoutes.route('/verify_email/<token>', methods=['GET'])
 def verify_email(token):
 
     # Obtain username from token
@@ -227,7 +237,7 @@ def verify_email(token):
     return redirect(url_for('login'))
 
 # If user doesn't activate email token in time, send new confirmation email
-@userAuth.route('/resendConfirmation', methods=['POST', 'GET'])
+@userAuthRoutes.route('/resendConfirmation', methods=['POST', 'GET'])
 def resendConfirmation():
     if request.method == 'POST':
 
@@ -258,7 +268,7 @@ def resendConfirmation():
         return render_template('resendConfirmation.html')
 
 # Forgot Password
-@userAuth.route('/forgotPass', methods=['POST', 'GET'])
+@userAuthRoutes.route('/forgotPass', methods=['POST', 'GET'])
 def forgotPass():
     if request.method == 'POST':
 
@@ -290,7 +300,7 @@ def forgotPass():
         return render_template('password_reset.html')
 
 # Reset password
-@userAuth.route('/reset_password/<token>', methods=['POST', 'GET'])
+@userAuthRoutes.route('/reset_password/<token>', methods=['POST', 'GET'])
 def reset_password(token):
     if request.method == 'POST':
         user = verify_reset_token(token)
@@ -320,3 +330,53 @@ def reset_password(token):
             return redirect(url_for('login'))
 
         return render_template('password_change.html', token=token)
+
+# Change Password
+@userAuthRoutes.route('/changePassword', methods=['POST'])
+@login_required
+def changePassword():
+
+    # Put form data into easy to read variables
+    oldPasswordEntered = request.form['oldPass']
+    newPassword = request.form['newPass']
+    confirmNewPassword = request.form['confirmNewPass']
+    username = session['username']
+
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM users WHERE username = %s', [username])
+    user = cur.fetchone()
+
+    # Make sure old password field isn't blank
+    if not oldPasswordEntered:
+        modal = 1
+        error = "Old password cannot be blank"
+        cur.close()
+        return render_template('profile.html', error=error, profile=user, modal=modal, oldPassword=oldPasswordEntered, newPassword=newPassword, confirmPassword=confirmNewPassword)
+
+    # Make sure new password and confirmation match (the only time they wouldnt match is if someone bypassed javascript controls)
+    if newPassword != confirmNewPassword:
+        modal=1
+        error = "Passwords dont match lol, you know you're web programming don't you"
+        cur.close()
+        return render_template('profile.html', error=error, profile=user, modal=modal, oldPassword=oldPasswordEntered, newPassword=newPassword, confirmPassword=confirmNewPassword)
+
+    # Need to confirm old password matches before this change can be applied
+    oldPassword = user['password']
+    if sha256_crypt.verify(oldPasswordEntered, oldPassword):
+        newPass = sha256_crypt.hash(str(newPassword))
+        cur.execute('UPDATE users SET password = %s WHERE username = %s', [newPass, username])
+
+        # Commit data to db
+        mysql.connection.commit()
+
+        # Close cursor connection to db
+        cur.close()
+
+        flash('Password changed successfully', 'success')
+        return render_template('login.html')
+
+    else:
+        error = "Old Password is incorrect"
+        cur.close()
+        modal=1
+        return render_template('profile.html', error=error, profile=user, modal=modal, oldPassword=oldPasswordEntered, newPassword=newPassword, confirmPassword=confirmNewPassword)

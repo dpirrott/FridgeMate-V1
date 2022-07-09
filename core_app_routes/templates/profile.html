@@ -24,7 +24,7 @@
         });
         function verifyUsername(input){
             $.post(
-                "{{url_for('userAuth.verify_username', username=False)}}",{
+                "{{url_for('userAuthRoutes.verify_username', username=False)}}",{
                     input: input
                 },
                 function(data, status){
@@ -60,7 +60,7 @@
         });
         function verifyEmail(input){
             $.post(
-                "{{url_for('userAuth.check_email', email=False)}}",{
+                "{{url_for('userAuthRoutes.check_email', email=False)}}",{
                     input: input
                 },
                 function(data, status){

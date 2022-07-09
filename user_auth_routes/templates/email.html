@@ -1,39 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FridgeMate Confirmation Email</title>
-</head>
-<body>
-    <table cellspacing="0" cellpadding="0" width="100%" style="border:0;">
-        <tr style="background-color: rgb(43, 43, 43);">
-            <td style="width:10px;"></td>
-            <td style=" display: flex; align-items: center;">
-                <img src="https://bl6pap003files.storage.live.com/y4m8u8vcX92zTinZizcU_FrkIboo0LyPJd2eJRCsduHZpzLQyRK7xzYOONbv9sSVKrJVJB7f8BwCASv2yWNS-Gz5A1AMRSSzsv9OLjTTqUUNPpa3DQuH3qTLSOXBxn4bg8D94Xa9ZakH13f-2j8mRU1E5fITu_5ILjQMaJzPhDzlOdYYQtwI8zK75gOjbKOhk84?width=303&height=70&cropmode=none" width="250" height="60" alt="FridgeMate Logo" />
-            </td>
-            <td style="width:10px;"></td>
-        </tr>
-        <tr style="background-color: rgb(189, 189, 189);">
-            <td style="width:10px;"></td>
-            <td style="color:black;">
-                <h3>Welcome {{ username }},</h3>
-                <p>You've successfully registered an account with FridgeMate.</p>
-                <p style="margin-bottom: 10px;">Please click the following link to confirm your email,</p>
-                <a href="{{ url_for('userAuth.verify_email', token=token, _external=True) }}"><button style="background-color: black; color: white; padding: 5px; font-weight: 700; border-radius: 10px;  margin-bottom: 10px;">Confirm</button></a>
-            </td>
-            <td style="width:10px;"></td>
-        </tr>
-        <tr style="background-color: rgb(43, 43, 43);">
-            <td style="width:10px;"></td>
-            <td style="color:white;">
-                <footer>
-                    <p style="font-size:smaller;">If you wish to stop receiving these emails, click the following link: <a href="%unsubscribe_url%">Unsubscribe</a></p>
-                </footer>
-            </td>
-            <td style="width:10px;"></td>
-        </tr>
+  </head>
+  <body>
+    <table cellspacing="0" cellpadding="0" width="100%" style="border: 0">
+      <tr style="background-color: rgb(43, 43, 43)">
+        <td style="width: 10px"></td>
+        <td style="display: flex; align-items: center">
+          <img
+            src="https://bl6pap003files.storage.live.com/y4m8u8vcX92zTinZizcU_FrkIboo0LyPJd2eJRCsduHZpzLQyRK7xzYOONbv9sSVKrJVJB7f8BwCASv2yWNS-Gz5A1AMRSSzsv9OLjTTqUUNPpa3DQuH3qTLSOXBxn4bg8D94Xa9ZakH13f-2j8mRU1E5fITu_5ILjQMaJzPhDzlOdYYQtwI8zK75gOjbKOhk84?width=303&height=70&cropmode=none"
+            width="250"
+            height="60"
+            alt="FridgeMate Logo"
+          />
+        </td>
+        <td style="width: 10px"></td>
+      </tr>
+      <tr style="background-color: rgb(189, 189, 189)">
+        <td style="width: 10px"></td>
+        <td style="color: black">
+          <h3>Welcome {{ username }},</h3>
+          <p>You've successfully registered an account with FridgeMate.</p>
+          <p style="margin-bottom: 10px">Please click the following link to confirm your email,</p>
+          <a href="{{ url_for('userAuthRoutes.verify_email', token=token, _external=True) }}"
+            ><button
+              style="
+                background-color: black;
+                color: white;
+                padding: 5px;
+                font-weight: 700;
+                border-radius: 10px;
+                margin-bottom: 10px;
+              "
+            >
+              Confirm
+            </button></a
+          >
+        </td>
+        <td style="width: 10px"></td>
+      </tr>
+      <tr style="background-color: rgb(43, 43, 43)">
+        <td style="width: 10px"></td>
+        <td style="color: white">
+          <footer>
+            <p style="font-size: smaller">
+              If you wish to stop receiving these emails, click the following link:
+              <a href="%unsubscribe_url%">Unsubscribe</a>
+            </p>
+          </footer>
+        </td>
+        <td style="width: 10px"></td>
+      </tr>
     </table>
-</body>
+  </body>
 </html>

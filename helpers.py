@@ -7,6 +7,6 @@ def login_required(f):
     def wrap(*args, **kwargs):
         if 'logged_in' not in session:
             flash(f'You are not authorized to view that page without logging in, please login below.', 'danger')
-            return redirect(url_for('userAuth.login'))
+            return redirect(url_for('userAuthRoutes.login'))
         return f(*args, **kwargs)
     return wrap

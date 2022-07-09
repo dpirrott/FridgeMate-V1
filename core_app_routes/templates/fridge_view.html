@@ -1,267 +1,257 @@
-{% extends 'layout.html' %}
-
-{% block head %}
+{% extends 'layout.html' %} {% block head %}
 <title>{{ session.username }}'s Fridge</title>
 
 <script type="text/javascript">
-    var deleteflag = 0;
+  var deleteflag = 0;
 
-    
+  $(document).ready(function () {
+    setTimeout(function () {
+      $(".alert").fadeOut(400);
+    }, 5000);
 
-    $(document).ready(function() {
-        setTimeout(function(){
-            $('.alert').fadeOut(400)
-        }, 5000);
-        
+    deleteflag = 0;
+    table = $("#fridgeContents").DataTable({
+      dom: "Bfrtip",
+      order: [[3, "asc"]],
+      lengthMenu: [
+        [6, 16, 24, -1],
+        ["10 rows", "25 rows", "50 rows", "Show all"],
+      ],
+      language: {
+        search: "",
+        searchPlaceholder: "Search table",
+        emptyTable: "You have nothing in your fridge",
+        infoEmpty:
+          'Click <p style="display:inline; color:#198754;">"Add product"</p> to add an item to your fridge',
+      },
+      buttons: [
+        {
+          text: "Insert product(s)",
+          action: function (e, dt, node, config) {
+            window.location.href = "{{ url_for('coreRoutes.add_item', tree=0) }}";
+          },
 
-        deleteflag = 0;
-        table = $('#fridgeContents').DataTable({
-            dom: 'Bfrtip',
-            "order": [[ 3, "asc" ]],
-            lengthMenu: [
-                [ 6, 16, 24, -1 ],
-                [ '10 rows', '25 rows', '50 rows', 'Show all' ]
-            ],
-            language: {
-                search: '',
-                searchPlaceholder: "Search table",
-                emptyTable: "You have nothing in your fridge",
-                infoEmpty: "Click <p style=\"display:inline; color:#198754;\">\"Add product\"</p> to add an item to your fridge"
-            },
-            buttons: [{
-                text:'Insert product(s)',
-                action: function ( e, dt, node, config ) {
-                    window.location.href = "{{ url_for('add_item', tree=0) }}"
-                },
-                
-                className: "btn btn-success add-item-btn",
-                init: function(api, node, config) {
-                    $(node).removeClass('dt-button');
-                },
-                attr: {
-                    id: "addBtn"
-                }
+          className: "btn btn-success add-item-btn",
+          init: function (api, node, config) {
+            $(node).removeClass("dt-button");
+          },
+          attr: {
+            id: "addBtn",
+          },
+        },
+        {
+          text: "Delete product(s)",
+          className: "btn btn-danger add-item-btn",
+          init: function (api, node, config) {
+            $(node).removeClass("dt-button");
+          },
+          attr: {
+            id: "deleteBtn",
+          },
+          action: function () {
+            deleteflag = 1;
 
-            }, {
-                text:'Delete product(s)',
-                className: "btn btn-danger add-item-btn",
-                init: function(api, node, config) {
-                    $(node).removeClass('dt-button');
-                },
-                attr: {
-                    id: "deleteBtn"
-                },
-                action: function() {
-                    deleteflag = 1
+            /* Hide expiry column and add select column */
+            convertCols();
 
-                    /* Hide expiry column and add select column */
-                    convertCols()
-
-                    /* Create cancel & Confirm buttons */
-                    addBtns();
-                }
-            }],
-            'columnDefs': [ {
-                'targets': [0], /* column index */
-                'orderable': false, /* true or false */
-            }],
-        });
-
-        function convertCols(){
-            /* Hide expiry date column */
-            $("#expDateHead").hide()
-            $(".expDateCol").each(function() {
-                $(this).hide()
-            })
-
-            /* Show select checkbox column */
-            $("#checkboxHead").show()
-            $(".checkboxCol").each(function() {
-                $(this).show()
-            })
-
-            /* Hide original delete button */
-            $("#deleteBtn").hide()
-        }
-
-        function reverseCols(){
-            /* Show expiry date column */
-            $("#expDateHead").show()
-            $(".expDateCol").each(function() {
-                $(this).show()
-            })
-
-            /* Hide select checkbox column */
-            $("#checkboxHead").hide()
-            $(".checkboxCol").each(function() {
-                $(this).hide()
-            })
-
-            /* Show original delete button */
-            $("#deleteBtn").show()
-
-            /* Hide confirm and cancel buttons */
-            $("#cancelBtn").hide()
-            $("#confirmBtn").hide()
-
-            $(".checkBox").each(function(){
-                if ($(this).prop("checked") == true){
-                    $(this).prop("checked", false);
-                }
-            })
-        }
- 
-        function addBtns(){
-
-            table.button().add( 1, {
-                text: 'Cancel',
-                className: "btn btn-info add-item-btn",
-                attr: {
-                    id: "cancelBtn"
-                },
-                init: function(api, node, config) {
-                    $(node).removeClass('dt-button');
-                },
-                action: function(){
-                    deleteflag = 0
-                    reverseCols()
-                }
-            });
-
-            table.button().add( 1, {
-                text: 'Confirm Delete',
-                className: "btn btn-danger add-item-btn",
-                attr: {
-                    id: "confirmBtn"
-                },
-                init: function(api, node, config) {
-                    $(node).removeClass('dt-button');
-                },
-                action: function(){
-                    deleteflag = 0
-
-                    /* Create array to store selected row id's */
-                    toDelete = []
-
-                    /* Store each selected row id in array */
-                    table.rows().nodes().to$().find('input[type="checkbox"]').each(function(){
-                        if ($(this).prop("checked") == true){
-                            toDelete.push($(this).attr("id"));
-                        }
-                    })
-
-                    deleteEntries(toDelete);
-
-                }
-
-            });
-
-        };
-
-        function deleteEntries(entries){
-            $.ajax({
-                url: "{{url_for('deleteEntries')}}",
-                type: "POST",
-                data: JSON.stringify({entries:entries}),
-                contentType: "application/json; charset=utf-8",
-                success: function(data){
-                            window.location.href = "/fridge_view";             
-                        },
-                error: function(jqXHR, exception){
-                            console.log(jqXHR.responseText);
-                        }
-            });
-        }
-
-        function addColor(){
-            $('.daysLeft').each( function() {
-                if($(this).text() <= 3){
-                    $(this).css('background-color', 'red');
-                }
-                else if($(this).text() <= 5){
-                    $(this).css('background-color', 'yellow');
-                }
-                else if($(this).text() == "Expired"){
-                    $(this).css('background-color', 'grey');
-                }
-                else{
-                    $(this).css('background-color', 'green');
-                }
-            })
-        }
-
-        table.on( 'order.dt',  function (){
-            if(deleteflag == 1){
-                convertCols()
-            }else{
-                reverseCols()
-            }
-            addColor()
-        });
-        table.on( 'draw.dt',   function () {
-            if(deleteflag == 1){
-                convertCols()
-            }else{
-                reverseCols()
-            }
-            addColor()
-        });
-        $('.daysLeft').each( function() {
-            if($(this).text() <= 3){
-                $(this).css('background-color', 'red');
-            }
-            else if($(this).text() <= 5){
-                $(this).css('background-color', 'yellow');
-            }
-            else if($(this).text() == "Expired"){
-                $(this).css('background-color', 'grey');
-            }
-            else{
-                $(this).css('background-color', 'green');
-            }
-        })
+            /* Create cancel & Confirm buttons */
+            addBtns();
+          },
+        },
+      ],
+      columnDefs: [
+        {
+          targets: [0] /* column index */,
+          orderable: false /* true or false */,
+        },
+      ],
     });
 
+    function convertCols() {
+      /* Hide expiry date column */
+      $("#expDateHead").hide();
+      $(".expDateCol").each(function () {
+        $(this).hide();
+      });
 
+      /* Show select checkbox column */
+      $("#checkboxHead").show();
+      $(".checkboxCol").each(function () {
+        $(this).show();
+      });
+
+      /* Hide original delete button */
+      $("#deleteBtn").hide();
+    }
+
+    function reverseCols() {
+      /* Show expiry date column */
+      $("#expDateHead").show();
+      $(".expDateCol").each(function () {
+        $(this).show();
+      });
+
+      /* Hide select checkbox column */
+      $("#checkboxHead").hide();
+      $(".checkboxCol").each(function () {
+        $(this).hide();
+      });
+
+      /* Show original delete button */
+      $("#deleteBtn").show();
+
+      /* Hide confirm and cancel buttons */
+      $("#cancelBtn").hide();
+      $("#confirmBtn").hide();
+
+      $(".checkBox").each(function () {
+        if ($(this).prop("checked") == true) {
+          $(this).prop("checked", false);
+        }
+      });
+    }
+
+    function addBtns() {
+      table.button().add(1, {
+        text: "Cancel",
+        className: "btn btn-info add-item-btn",
+        attr: {
+          id: "cancelBtn",
+        },
+        init: function (api, node, config) {
+          $(node).removeClass("dt-button");
+        },
+        action: function () {
+          deleteflag = 0;
+          reverseCols();
+        },
+      });
+
+      table.button().add(1, {
+        text: "Confirm Delete",
+        className: "btn btn-danger add-item-btn",
+        attr: {
+          id: "confirmBtn",
+        },
+        init: function (api, node, config) {
+          $(node).removeClass("dt-button");
+        },
+        action: function () {
+          deleteflag = 0;
+
+          /* Create array to store selected row id's */
+          toDelete = [];
+
+          /* Store each selected row id in array */
+          table
+            .rows()
+            .nodes()
+            .to$()
+            .find('input[type="checkbox"]')
+            .each(function () {
+              if ($(this).prop("checked") == true) {
+                toDelete.push($(this).attr("id"));
+              }
+            });
+
+          deleteEntries(toDelete);
+        },
+      });
+    }
+
+    function deleteEntries(entries) {
+      $.ajax({
+        url: "{{url_for('coreRoutes.deleteEntries')}}",
+        type: "POST",
+        data: JSON.stringify({ entries: entries }),
+        contentType: "application/json; charset=utf-8",
+        success: function (data) {
+          window.location.href = "/fridge_view";
+        },
+        error: function (jqXHR, exception) {
+          console.log(jqXHR.responseText);
+        },
+      });
+    }
+
+    function addColor() {
+      $(".daysLeft").each(function () {
+        if ($(this).text() <= 3) {
+          $(this).css("background-color", "red");
+        } else if ($(this).text() <= 5) {
+          $(this).css("background-color", "yellow");
+        } else if ($(this).text() == "Expired") {
+          $(this).css("background-color", "grey");
+        } else {
+          $(this).css("background-color", "green");
+        }
+      });
+    }
+
+    table.on("order.dt", function () {
+      if (deleteflag == 1) {
+        convertCols();
+      } else {
+        reverseCols();
+      }
+      addColor();
+    });
+    table.on("draw.dt", function () {
+      if (deleteflag == 1) {
+        convertCols();
+      } else {
+        reverseCols();
+      }
+      addColor();
+    });
+    $(".daysLeft").each(function () {
+      if ($(this).text() <= 3) {
+        $(this).css("background-color", "red");
+      } else if ($(this).text() <= 5) {
+        $(this).css("background-color", "yellow");
+      } else if ($(this).text() == "Expired") {
+        $(this).css("background-color", "grey");
+      } else {
+        $(this).css("background-color", "green");
+      }
+    });
+  });
 </script>
-{% endblock %}
+{% endblock %} {% block body %}
 
-{% block body %}
+<div class="formTitleContainer borderTopLeftRight">
+  <h1 class="formTitle">{{ session.username.capitalize() }}'s Fridge</h1>
+</div>
 
-    <div class="formTitleContainer borderTopLeftRight">
-        <h1 class="formTitle">{{ session.username.capitalize() }}'s Fridge</h1>
-    </div>
+<table id="fridgeContents" class="datatable stripe w-auto" style="width: 100%">
+  <thead>
+    <tr>
+      <th id="checkboxHead" style="display: none">Select</th>
+      <th>Product</th>
+      <th id="expDateHead">Expiry Date</th>
+      <th style="display: none">Hidden days left</th>
+      <th>Days Left</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for product in userProducts %} {% if product['deleted'] == 'no' %}
+    <tr class="fridgeviewRows">
+      <td class="checkboxCol">
+        <input type="checkbox" class="checkBox" id="{{ product['item_id'] }}" />
+      </td>
+      <td class="firstCol" value="{{ product['item'] }}">{{ product['item'] }}</td>
+      <td class="expDateCol" value="{{ product['expiry_date'] }}">{{ product['expiry_date'] }}</td>
 
-    <table id="fridgeContents" class="datatable stripe w-auto" style="width:100%">
-        <thead>
-            <tr>
-                <th id="checkboxHead" style="display: none;">Select</th>
-                <th>Product</th>
-                <th id="expDateHead">Expiry Date</th>
-                <th style="display: none;">Hidden days left</th>
-                <th>Days Left</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for product in userProducts %}
-                {% if product['deleted'] == 'no' %}
-                    <tr class="fridgeviewRows">
-                        <td class="checkboxCol"><input type="checkbox" class="checkBox" id="{{ product['item_id'] }}"></td>
-                        <td class="firstCol" value="{{ product['item'] }}">{{ product['item'] }}</td>
-                        <td class="expDateCol" value="{{ product['expiry_date'] }}">{{ product['expiry_date'] }}</td>
-                        
-                        {% if product['days_left'] < 0 %}
-                        <td style="display: none;">{{ product['days_left']*(-2)+365 }}</td>
-                        <td class="daysLeft text-center">Expired</td>
-                        {% else %}
-                        <td style="display: none;">{{ product['days_left'] }}</td>
-                        <td class="daysLeft text-center">{{ product['days_left'] }}</td>
-                        {% endif %}
-                    </tr>
-                {% endif %}
-            {% endfor %}
-        </tbody>
-    </table>
-    
+      {% if product['days_left'] < 0 %}
+      <td style="display: none">{{ product['days_left']*(-2)+365 }}</td>
+      <td class="daysLeft text-center">Expired</td>
+      {% else %}
+      <td style="display: none">{{ product['days_left'] }}</td>
+      <td class="daysLeft text-center">{{ product['days_left'] }}</td>
+      {% endif %}
+    </tr>
+    {% endif %} {% endfor %}
+  </tbody>
+</table>
 
 {% endblock %}
