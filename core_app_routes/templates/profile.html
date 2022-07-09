@@ -60,7 +60,7 @@
         });
         function verifyEmail(input){
             $.post(
-                "{{url_for('check_email', email=False)}}",{
+                "{{url_for('userAuth.check_email', email=False)}}",{
                     input: input
                 },
                 function(data, status){

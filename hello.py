@@ -4,7 +4,8 @@ from flask_mail import Mail
 from datetime import datetime
 from passlib.hash import sha256_crypt
 from helpers import login_required
-from user_auth.routes import userAuth, mysql
+from user_auth.routes import userAuth
+from flask_mysqldb import MySQL
 import os
 from dotenv import load_dotenv
 
@@ -13,7 +14,7 @@ load_dotenv()
 
 app = Flask(__name__)
 mail = Mail(app)
-
+mysql = MySQL()
 mysql.init_app(app)
 
 # Link MySQL database to app
