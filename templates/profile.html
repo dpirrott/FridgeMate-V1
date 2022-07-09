@@ -24,7 +24,7 @@
         });
         function verifyUsername(input){
             $.post(
-                "{{url_for('verify_username', username=False)}}",{
+                "{{url_for('userAuth.verify_username', username=False)}}",{
                     input: input
                 },
                 function(data, status){
@@ -46,7 +46,7 @@
                         $("#usernameVerify").css("color", "green");
                     }
                 }
-            );      
+            );
         };
 
         /* Check if email is already in database*/
@@ -82,14 +82,14 @@
                         }
                     }
                 }
-            );      
+            );
         };
 
         /* Make sure passwords match */
         $(function(){
         $("#updatePassBtn").prop('disabled', true);
         $("#confirmNewPass").keyup(function(){
-            if($(this).val().length >= 5){    
+            if($(this).val().length >= 5){
                 if($(this).val() == $("#newPass").val()){
                     $("#changePassVerify").text("Passwords match.");
                     $("#changePassVerify").css("color", "green");
@@ -106,12 +106,12 @@
             }
         });
         $("#newPass").keyup(function(){
-            if($(this).val().length >= 5){ 
+            if($(this).val().length >= 5){
                 if($(this).val() == $("#confirmNewPass").val()){
                     $("#changePassVerify").text("Passwords match.");
                     $("#changePassVerify").css("color", "green");
                     $("#updatePassBtn").prop('disabled', false);
-                    
+
                 }else{
                     $("#changePassVerify").text("Passwords do not match.");
                     $("#changePassVerify").css("color", "red");
@@ -151,22 +151,22 @@
                 $("#"+outputID).text("Once every " + val + " days");
             }
         }
-        
+
     }
 </script>
 {% if modal == 1 %}
-    <script type="text/javascript"> 
+    <script type="text/javascript">
         $(window).on('load', function(){
             $('#passwordModal').modal('show');
         });
     </script>
 {% endif %}
 {% if modal2 == 1 %}
-    <script type="text/javascript"> 
+    <script type="text/javascript">
         $(window).on('load', function(){
             $('#editProfile').modal('show');
         });
-        
+
     </script>
 {% endif %}
 
@@ -216,7 +216,7 @@
                     </td>
                 </tr>
             </table>
-            <h3>Miscellaneous Info</h3>    
+            <h3>Miscellaneous Info</h3>
             <table class="profileTable">
                 <tr>
                     <th class="profileHeaders">User ID:</th>
@@ -240,7 +240,7 @@
             </svg> Edit Profile</button>
         </div>
     </div>
-</div>    
+</div>
 
 
 
@@ -269,7 +269,7 @@
                     </div>
                     <p class="message" id="changePassVerify"></p>
                 </div>
-                
+
                 <div class="modal-footer">
                     <div>
                         {% if error %}
